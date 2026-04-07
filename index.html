@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LibraFlow | Made by ISUF</title>
+    <title>Library System | Made by ISUF</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
@@ -12,49 +12,53 @@
             darkMode: 'class',
             theme: {
                 extend: {
-                    colors: { primary: '#6366f1', darkBg: '#0f172a', darkCard: '#1e293b' },
-                    animation: { 'float': 'floating 3s ease-in-out infinite' }
+                    colors: { primary: '#6366f1', darkBg: '#0f172a', darkCard: '#1e293b' }
                 }
             }
         }
     </script>
     <style>
-        @keyframes floating { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
         .glass { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.2); }
         .dark .glass { background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(255, 255, 255, 0.05); }
         .tab-content { display: none; }
         .tab-content.active { display: block; animation: fadeInRight 0.5s ease; }
-        @keyframes fadeInRight { from { opacity: 0; transform: translateX(30px); } to { opacity: 1; transform: translateX(0); } }
+        @keyframes fadeInRight { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
         .sidebar-item.active { background: #6366f1; color: white; box-shadow: 0 10px 20px -5px rgba(99, 102, 241, 0.5); }
-        ::-webkit-scrollbar { width: 5px; }
-        ::-webkit-scrollbar-thumb { background: #6366f1; border-radius: 10px; }
     </style>
 </head>
 <body class="bg-slate-100 dark:bg-darkBg text-slate-800 dark:text-slate-100 min-h-screen transition-all">
 
     <aside id="sidebar" class="fixed left-0 top-0 h-full w-64 glass border-r z-50 transition-transform -translate-x-full lg:translate-x-0">
         <div class="p-6">
-            <div class="flex items-center gap-3 mb-10 animate__animated animate__pulse animate__infinite">
-                <div class="h-10 w-10 bg-indigo-600 rounded-2xl flex items-center justify-center text-white shadow-xl"><i class="fas fa-code"></i></div>
-                <h1 class="text-xl font-black tracking-tighter text-indigo-600 dark:text-indigo-400">made by ISUF</h1>
+            <div class="flex items-center gap-3 mb-10 animate__animated animate__fadeInLeft">
+                <div class="h-10 w-10 bg-indigo-600 rounded-2xl flex items-center justify-center text-white shadow-xl">
+                    <i class="fas fa-user-check"></i>
+                </div>
+                <div>
+                    <p class="text-[10px] uppercase font-bold text-slate-400 leading-none">Developer</p>
+                    <h1 class="text-xl font-black tracking-tighter text-indigo-600 dark:text-indigo-400">made by ISUF</h1>
+                </div>
             </div>
+
             <nav class="space-y-2">
                 <button onclick="switchTab('dashboard')" class="sidebar-item active w-full flex items-center gap-3 px-4 py-3 rounded-2xl transition-all" data-tab="dashboard"><i class="fas fa-home w-5"></i> Dashboard</button>
-                <button onclick="switchTab('books')" class="sidebar-item w-full flex items-center gap-3 px-4 py-3 rounded-2xl transition-all" data-tab="books"><i class="fas fa-book w-5"></i> Book Inventory</button>
-                <button onclick="switchTab('issue')" class="sidebar-item w-full flex items-center gap-3 px-4 py-3 rounded-2xl transition-all" data-tab="issue"><i class="fas fa-exchange-alt w-5"></i> Issue / Return</button>
-                <button onclick="switchTab('students')" class="sidebar-item w-full flex items-center gap-3 px-4 py-3 rounded-2xl transition-all" data-tab="students"><i class="fas fa-users w-5"></i> Student Data</button>
+                <button onclick="switchTab('books')" class="sidebar-item w-full flex items-center gap-3 px-4 py-3 rounded-2xl transition-all" data-tab="books"><i class="fas fa-book w-5"></i> Manage Books</button>
+                <button onclick="switchTab('issue')" class="sidebar-item w-full flex items-center gap-3 px-4 py-3 rounded-2xl transition-all" data-tab="issue"><i class="fas fa-plus-circle w-5"></i> Issue / Return</button>
+                <button onclick="switchTab('students')" class="sidebar-item w-full flex items-center gap-3 px-4 py-3 rounded-2xl transition-all" data-tab="students"><i class="fas fa-users w-5"></i> Student Database</button>
             </nav>
         </div>
-        <div class="absolute bottom-6 w-full px-6">
-            <button onclick="toggleDarkMode()" class="w-full py-3 glass rounded-2xl flex items-center justify-center gap-3 hover:bg-indigo-50 dark:hover:bg-slate-800 transition-all">
-                <i id="theme-icon" class="fas fa-moon"></i> <span>Theme</span>
+        
+        <div class="absolute bottom-6 w-full px-6 text-center">
+            <button onclick="toggleDarkMode()" class="w-full py-3 glass rounded-2xl mb-4 flex items-center justify-center gap-2 hover:bg-white transition-all">
+                <i id="theme-icon" class="fas fa-moon"></i> <span>Switch Theme</span>
             </button>
+            <p class="text-[10px] text-slate-400">© 2026 ISUF Library Pro</p>
         </div>
     </aside>
 
     <main class="lg:ml-64 p-4 md:p-8">
         <header class="flex justify-between items-center mb-8">
-            <h2 id="page-title" class="text-3xl font-black">Dashboard</h2>
+            <h2 id="page-title" class="text-3xl font-black">System Overview</h2>
             <button onclick="toggleSidebar()" class="lg:hidden p-3 glass rounded-xl"><i class="fas fa-bars"></i></button>
         </header>
 
@@ -65,7 +69,7 @@
                     <h3 id="stat-books" class="text-4xl font-black">0</h3>
                 </div>
                 <div class="glass p-6 rounded-3xl animate__animated animate__zoomIn" style="animation-delay: 0.1s">
-                    <p class="text-amber-500 text-xs font-bold uppercase mb-2">Currently Issued</p>
+                    <p class="text-amber-500 text-xs font-bold uppercase mb-2">Issued Now</p>
                     <h3 id="stat-issued" class="text-4xl font-black">0</h3>
                 </div>
                 <div class="glass p-6 rounded-3xl animate__animated animate__zoomIn" style="animation-delay: 0.2s">
@@ -73,44 +77,46 @@
                     <h3 id="stat-students" class="text-4xl font-black">0</h3>
                 </div>
                 <div class="glass p-6 rounded-3xl animate__animated animate__zoomIn" style="animation-delay: 0.3s">
-                    <p class="text-indigo-500 text-xs font-bold uppercase mb-2">History Records</p>
+                    <p class="text-indigo-500 text-xs font-bold uppercase mb-2">History</p>
                     <h3 id="stat-history" class="text-4xl font-black">0</h3>
                 </div>
             </div>
             
-            <div class="glass p-6 rounded-3xl animate__animated animate__fadeInUp">
-                <h4 class="font-bold mb-4"><i class="fas fa-history mr-2"></i>Recent Activity</h4>
-                <div id="logs" class="space-y-3 text-sm"></div>
+            <div class="glass p-6 rounded-3xl">
+                <h4 class="font-bold mb-4 flex items-center gap-2"><i class="fas fa-bolt text-indigo-500"></i> Recent Activity</h4>
+                <div id="logs" class="space-y-2"></div>
             </div>
         </section>
 
         <section id="books" class="tab-content">
             <div class="flex flex-wrap gap-4 mb-6">
-                <input type="text" id="book-search" oninput="renderBooks()" placeholder="Search Books..." class="flex-1 glass px-6 py-4 rounded-2xl outline-none focus:ring-2 focus:ring-indigo-500">
-                <button onclick="toggleModal('book-modal')" class="px-8 py-4 bg-indigo-600 text-white rounded-2xl font-bold shadow-lg hover:scale-105 transition-all">Add Book</button>
+                <input type="text" id="book-search" oninput="renderBooks()" placeholder="Quick Search ID or Name..." class="flex-1 glass px-6 py-4 rounded-2xl outline-none focus:ring-2 focus:ring-indigo-500">
+                <button onclick="toggleModal('book-modal')" class="px-8 py-4 bg-indigo-600 text-white rounded-2xl font-bold shadow-lg hover:scale-105 transition-all">Add New Book</button>
             </div>
             <div id="books-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"></div>
         </section>
 
         <section id="issue" class="tab-content">
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                <div class="glass p-8 rounded-[2rem] h-fit border-2 border-indigo-500/20 shadow-2xl animate__animated animate__fadeInLeft">
-                    <h4 class="text-xl font-black mb-6 flex items-center gap-2"><i class="fas fa-bolt text-amber-500"></i> Smart Issue</h4>
+                <div class="glass p-8 rounded-[2rem] border-2 border-indigo-500/20 shadow-2xl">
+                    <h4 class="text-xl font-black mb-6">Smart Transaction</h4>
                     <form onsubmit="handleSmartIssue(event)" class="space-y-4">
-                        <input type="text" id="iss-book-id" placeholder="Book ID (B101)" required class="w-full p-4 glass rounded-2xl outline-none focus:ring-2 focus:ring-indigo-500">
-                        <input type="text" id="iss-student-id" placeholder="Student ID (S501)" required class="w-full p-4 glass rounded-2xl outline-none focus:ring-2 focus:ring-indigo-500">
-                        <input type="text" id="iss-student-name" placeholder="Student Name" required class="w-full p-4 glass rounded-2xl outline-none focus:ring-2 focus:ring-indigo-500">
-                        <input type="text" id="iss-student-class" placeholder="Class / Section" required class="w-full p-4 glass rounded-2xl outline-none focus:ring-2 focus:ring-indigo-500">
-                        <button type="submit" class="w-full py-4 bg-indigo-600 text-white rounded-2xl font-black shadow-xl hover:opacity-90">ISSUE BOOK NOW</button>
+                        <input type="text" id="iss-book-id" placeholder="Book ID (e.g. B10)" required class="w-full p-4 glass rounded-2xl outline-none border-none">
+                        <input type="text" id="iss-student-id" placeholder="Student ID (e.g. S55)" required class="w-full p-4 glass rounded-2xl outline-none border-none">
+                        <input type="text" id="iss-student-name" placeholder="Student Full Name" required class="w-full p-4 glass rounded-2xl outline-none border-none">
+                        <input type="text" id="iss-student-class" placeholder="Class / Roll" required class="w-full p-4 glass rounded-2xl outline-none border-none">
+                        <button type="submit" class="w-full py-4 bg-indigo-600 text-white rounded-2xl font-black shadow-xl hover:bg-indigo-700 transition-all">PROCESS ISSUE</button>
                     </form>
-                    <p class="mt-4 text-[10px] text-slate-400">*If Student ID is new, it will be added. If existing, details will be updated.</p>
                 </div>
 
-                <div class="lg:col-span-2 glass rounded-[2rem] overflow-hidden animate__animated animate__fadeInRight">
-                    <div class="p-6 bg-indigo-600 text-white font-bold">Currently Issued Books</div>
+                <div class="lg:col-span-2 glass rounded-[2rem] overflow-hidden animate__animated animate__fadeInUp">
+                    <div class="p-6 bg-indigo-600 text-white font-bold flex justify-between items-center">
+                        <span>Current Active Issues</span>
+                        <i class="fas fa-sync-alt animate-spin-slow"></i>
+                    </div>
                     <div class="overflow-x-auto">
                         <table class="w-full text-left">
-                            <thead class="bg-slate-50 dark:bg-slate-900 text-[10px] uppercase"><tr class="p-4"><th class="p-4">Book</th><th class="p-4">Student</th><th class="p-4">Date</th><th class="p-4 text-right">Action</th></tr></thead>
+                            <thead class="bg-slate-50 dark:bg-slate-900 text-[10px] uppercase"><tr class="p-4"><th class="p-4">Book Info</th><th class="p-4">Student Info</th><th class="p-4 text-right">Action</th></tr></thead>
                             <tbody id="issued-list"></tbody>
                         </table>
                     </div>
@@ -119,9 +125,9 @@
         </section>
 
         <section id="students" class="tab-content">
-            <div class="glass rounded-3xl overflow-hidden shadow-xl">
+            <div class="glass rounded-3xl overflow-hidden shadow-xl border border-slate-200 dark:border-slate-800">
                 <table class="w-full text-left">
-                    <thead class="bg-indigo-600 text-white uppercase text-xs"><tr><th class="p-5">ID</th><th class="p-5">Name</th><th class="p-5">Class</th><th class="p-5">Status</th></tr></thead>
+                    <thead class="bg-indigo-600 text-white uppercase text-xs"><tr><th class="p-5">Student ID</th><th class="p-5">Name</th><th class="p-5">Current Class</th><th class="p-5 text-right">Management</th></tr></thead>
                     <tbody id="student-list" class="divide-y divide-slate-100 dark:divide-slate-800"></tbody>
                 </table>
             </div>
@@ -130,30 +136,31 @@
 
     <div id="book-modal" class="fixed inset-0 bg-black/60 hidden items-center justify-center z-[100] backdrop-blur-sm p-4">
         <div class="glass max-w-md w-full rounded-[2.5rem] p-8 animate__animated animate__zoomIn">
-            <h3 class="text-2xl font-black mb-6">Add New Book</h3>
+            <h3 class="text-2xl font-black mb-6">Inventory Entry</h3>
             <form onsubmit="handleBookAdd(event)" class="space-y-4">
-                <input type="text" id="nb-id" placeholder="Book ID" required class="w-full p-4 bg-slate-100 dark:bg-slate-800 rounded-2xl outline-none">
-                <input type="text" id="nb-name" placeholder="Book Title" required class="w-full p-4 bg-slate-100 dark:bg-slate-800 rounded-2xl outline-none">
-                <input type="text" id="nb-cat" placeholder="Category" class="w-full p-4 bg-slate-100 dark:bg-slate-800 rounded-2xl outline-none">
-                <div class="flex gap-4">
+                <input type="text" id="nb-id" placeholder="Assign Unique Book ID" required class="w-full p-4 bg-slate-100 dark:bg-slate-800 rounded-2xl outline-none">
+                <input type="text" id="nb-name" placeholder="Book Title / Author" required class="w-full p-4 bg-slate-100 dark:bg-slate-800 rounded-2xl outline-none">
+                <input type="text" id="nb-cat" placeholder="Subject / Category" class="w-full p-4 bg-slate-100 dark:bg-slate-800 rounded-2xl outline-none">
+                <div class="flex gap-4 pt-4">
                     <button type="button" onclick="toggleModal('book-modal')" class="flex-1 font-bold text-slate-400">Cancel</button>
-                    <button type="submit" class="flex-1 py-4 bg-indigo-600 text-white rounded-2xl font-bold">Save</button>
+                    <button type="submit" class="flex-1 py-4 bg-indigo-600 text-white rounded-2xl font-bold shadow-lg">Save Book</button>
                 </div>
             </form>
         </div>
     </div>
 
     <script>
+        // DB INITIALIZATION
         let db = {
-            books: JSON.parse(localStorage.getItem('lib_v3_books')) || [],
-            students: JSON.parse(localStorage.getItem('lib_v3_students')) || [],
-            issued: JSON.parse(localStorage.getItem('lib_v3_issued')) || [],
-            history: JSON.parse(localStorage.getItem('lib_v3_history')) || [],
-            logs: JSON.parse(localStorage.getItem('lib_v3_logs')) || []
+            books: JSON.parse(localStorage.getItem('isuf_books')) || [],
+            students: JSON.parse(localStorage.getItem('isuf_students')) || [],
+            issued: JSON.parse(localStorage.getItem('isuf_issued')) || [],
+            history: JSON.parse(localStorage.getItem('isuf_history')) || [],
+            logs: JSON.parse(localStorage.getItem('isuf_logs')) || []
         };
 
         const sync = () => {
-            Object.keys(db).forEach(k => localStorage.setItem('lib_v3_'+k, JSON.stringify(db[k])));
+            Object.keys(db).forEach(k => localStorage.setItem('isuf_'+k, JSON.stringify(db[k])));
             updateDashboard();
         };
 
@@ -168,8 +175,6 @@
             document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
             document.getElementById(id).classList.add('active');
             document.querySelector(`[data-tab="${id}"]`).classList.add('active');
-            document.getElementById('page-title').innerText = id.charAt(0).toUpperCase() + id.slice(1);
-            if(window.innerWidth < 1024) toggleSidebar();
             if(id === 'books') renderBooks();
             if(id === 'issue') renderIssued();
             if(id === 'students') renderStudents();
@@ -178,33 +183,38 @@
         function toggleSidebar() { document.getElementById('sidebar').classList.toggle('-translate-x-full'); }
         function toggleModal(id) { document.getElementById(id).classList.toggle('hidden'); document.getElementById(id).classList.toggle('flex'); }
 
+        // BOOK ACTIONS
         function handleBookAdd(e) {
             e.preventDefault();
             const id = document.getElementById('nb-id').value.trim();
             if(db.books.some(b => b.id === id)) return alert('Book ID already exists!');
             db.books.push({ id, name: document.getElementById('nb-name').value, cat: document.getElementById('nb-cat').value });
-            addLog(`Added Book: ${id}`);
+            addLog(`Book Added: ${id}`);
             toggleModal('book-modal'); e.target.reset(); renderBooks();
         }
 
         function renderBooks() {
             const q = document.getElementById('book-search').value.toLowerCase();
             document.getElementById('books-grid').innerHTML = db.books.filter(b => b.id.toLowerCase().includes(q) || b.name.toLowerCase().includes(q)).map(b => `
-                <div class="glass p-5 rounded-3xl animate__animated animate__fadeInUp">
-                    <div class="h-32 bg-indigo-50 dark:bg-slate-800 rounded-2xl flex items-center justify-center mb-4"><i class="fas fa-book text-4xl text-indigo-200"></i></div>
+                <div class="glass p-5 rounded-3xl animate__animated animate__fadeIn">
+                    <div class="h-12 w-12 bg-indigo-50 dark:bg-slate-800 rounded-xl flex items-center justify-center mb-4"><i class="fas fa-book text-indigo-500"></i></div>
                     <h5 class="font-bold leading-tight">${b.name}</h5>
                     <p class="text-[10px] text-slate-400 font-mono mt-1">ID: ${b.id}</p>
-                    <button onclick="deleteBook('${b.id}')" class="mt-4 text-red-400 text-xs hover:underline">Delete</button>
+                    <button onclick="deleteBook('${b.id}')" class="mt-4 text-red-500 text-xs font-bold hover:underline"><i class="fas fa-trash-alt mr-1"></i> Delete Book</button>
                 </div>
             `).join('');
         }
 
         function deleteBook(id) {
-            if(db.issued.some(i => i.bId === id)) return alert('Book is issued!');
-            db.books = db.books.filter(b => b.id !== id); sync(); renderBooks();
+            if(db.issued.some(i => i.bId === id)) return alert('Error: Book is currently with a student!');
+            if(confirm('Confirm delete book?')) {
+                db.books = db.books.filter(b => b.id !== id);
+                addLog(`Deleted Book: ${id}`);
+                sync(); renderBooks();
+            }
         }
 
-        // --- SMART ISSUE LOGIC ---
+        // SMART ISSUE/RETURN
         function handleSmartIssue(e) {
             e.preventDefault();
             const bId = document.getElementById('iss-book-id').value.trim();
@@ -213,31 +223,29 @@
             const sClass = document.getElementById('iss-student-class').value;
 
             const book = db.books.find(b => b.id === bId);
-            if(!book) return alert('Book ID not found!');
-            if(db.issued.some(i => i.bId === bId)) return alert('Book already issued!');
+            if(!book) return alert('Book ID not found in Inventory!');
+            if(db.issued.some(i => i.bId === bId)) return alert('Book already issued to someone else!');
 
-            // Smart Update/Add Student
-            const studentIdx = db.students.findIndex(s => s.id === sId);
-            if(studentIdx > -1) {
-                db.students[studentIdx] = { id: sId, name: sName, class: sClass }; // Update existing
-                addLog(`Updated Student: ${sId}`);
+            // Update or Create student
+            const sIdx = db.students.findIndex(s => s.id === sId);
+            if(sIdx > -1) {
+                db.students[sIdx] = { id: sId, name: sName, class: sClass };
+                addLog(`Student ${sId} info updated`);
             } else {
-                db.students.push({ id: sId, name: sName, class: sClass }); // Add new
-                addLog(`Auto-added Student: ${sId}`);
+                db.students.push({ id: sId, name: sName, class: sClass });
+                addLog(`New student auto-registered: ${sId}`);
             }
 
             db.issued.push({ bId, bName: book.name, sId, sName, sClass, date: new Date().toLocaleDateString() });
-            addLog(`Issued ${bId} to ${sId}`);
-            e.target.reset(); sync(); renderIssued();
+            sync(); e.target.reset(); renderIssued();
         }
 
         function renderIssued() {
             document.getElementById('issued-list').innerHTML = db.issued.map((i, idx) => `
                 <tr class="border-b border-slate-50 dark:border-slate-800 animate__animated animate__fadeIn">
-                    <td class="p-4"><p class="font-bold text-sm">${i.bName}</p><span class="text-[10px] font-mono text-slate-400">${i.bId}</span></td>
-                    <td class="p-4 text-sm">${i.sName} <br><span class="text-[10px] text-slate-400">Class: ${i.sClass}</span></td>
-                    <td class="p-4 text-xs font-mono">${i.date}</td>
-                    <td class="p-4 text-right"><button onclick="returnBook(${idx})" class="p-2 bg-amber-100 text-amber-600 rounded-xl hover:bg-amber-600 hover:text-white transition-all"><i class="fas fa-undo"></i></button></td>
+                    <td class="p-4"><p class="font-bold text-sm">${i.bName}</p><span class="text-[10px] text-slate-400">ID: ${i.bId}</span></td>
+                    <td class="p-4 text-sm">${i.sName} <br><span class="text-[10px] text-slate-400">ID: ${i.sId} | ${i.sClass}</span></td>
+                    <td class="p-4 text-right"><button onclick="returnBook(${idx})" class="bg-emerald-500 text-white px-4 py-2 rounded-xl text-xs font-bold hover:bg-emerald-600 transition-all">RETURN</button></td>
                 </tr>
             `).join('');
         }
@@ -246,18 +254,29 @@
             const item = db.issued[idx];
             db.history.push({ ...item, returnDate: new Date().toLocaleDateString() });
             db.issued.splice(idx, 1);
-            addLog(`Returned: ${item.bId}`); sync(); renderIssued();
+            addLog(`Returned: ${item.bId}`);
+            sync(); renderIssued();
         }
 
+        // STUDENT DATABASE & DELETE
         function renderStudents() {
             document.getElementById('student-list').innerHTML = db.students.map(s => `
-                <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50">
+                <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-all">
                     <td class="p-5 font-mono text-indigo-500 font-bold">${s.id}</td>
                     <td class="p-5 font-bold">${s.name}</td>
                     <td class="p-5 text-sm">${s.class}</td>
-                    <td class="p-5"><span class="px-3 py-1 bg-indigo-100 text-indigo-600 rounded-full text-[10px] font-black uppercase">Active</span></td>
+                    <td class="p-5 text-right"><button onclick="deleteStudent('${s.id}')" class="text-red-500 hover:scale-110 transition-transform"><i class="fas fa-user-minus"></i> Delete</button></td>
                 </tr>
             `).join('');
+        }
+
+        function deleteStudent(id) {
+            if(db.issued.some(i => i.sId === id)) return alert('Cannot delete! Student has a book pending.');
+            if(confirm('Are you sure you want to remove this student record?')) {
+                db.students = db.students.filter(s => s.id !== id);
+                addLog(`Student Removed: ${id}`);
+                sync(); renderStudents();
+            }
         }
 
         function updateDashboard() {
@@ -268,17 +287,17 @@
         }
 
         function renderLogs() {
-            document.getElementById('logs').innerHTML = db.logs.map(l => `<div class="p-3 glass rounded-xl flex justify-between"><span>${l.msg}</span><span class="text-slate-400">${l.time}</span></div>`).join('');
+            document.getElementById('logs').innerHTML = db.logs.map(l => `<div class="p-3 glass rounded-xl flex justify-between text-xs font-medium"><span>${l.msg}</span><span class="text-slate-400">${l.time}</span></div>`).join('');
         }
 
         function toggleDarkMode() {
             const isDark = document.documentElement.classList.toggle('dark');
-            localStorage.setItem('lib_v3_theme', isDark ? 'dark' : 'light');
+            localStorage.setItem('isuf_theme', isDark ? 'dark' : 'light');
             document.getElementById('theme-icon').className = isDark ? 'fas fa-sun' : 'fas fa-moon';
         }
 
         window.onload = () => {
-            if(localStorage.getItem('lib_v3_theme') === 'dark') toggleDarkMode();
+            if(localStorage.getItem('isuf_theme') === 'dark') toggleDarkMode();
             sync(); renderLogs(); switchTab('dashboard');
         };
     </script>
