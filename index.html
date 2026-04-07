@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Library System | Made by ISUF</title>
+    <title>ISUF Library OS | God Level AI</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
@@ -12,133 +12,154 @@
             darkMode: 'class',
             theme: {
                 extend: {
-                    colors: { primary: '#6366f1', darkBg: '#0f172a', darkCard: '#1e293b' }
+                    colors: { primary: '#6366f1', darkBg: '#020617', darkCard: '#0f172a' },
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
                 }
             }
         }
     </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; transition: background-color 0.5s ease; overflow-x: hidden; }
-        .dark body { background-color: #020617; }
+        body { font-family: 'Inter', sans-serif; letter-spacing: -0.01em; background: #f1f5f9; }
+        .dark body { background: #020617; }
         
-        /* Screenshot Exact UI Styles */
-        .glass-card { background: white; border-radius: 2.5rem; box-shadow: 0 20px 50px rgba(0,0,0,0.04); border: 1px solid rgba(0,0,0,0.02); }
-        .dark .glass-card { background: #0f172a; border: 1px solid rgba(255,255,255,0.05); box-shadow: none; }
+        /* Glassmorphism Ultra */
+        .glass { background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(20px) saturate(180%); border: 1px solid rgba(255, 255, 255, 0.2); }
+        .dark .glass { background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(20px) saturate(180%); border: 1px solid rgba(255, 255, 255, 0.05); }
         
-        .tab-content { display: none; opacity: 0; }
+        /* Cinematic Tab Transitions */
+        .tab-content { display: none; opacity: 0; transform: scale(0.98) translateY(10px); transition: none; }
         .tab-content.active { display: block; }
         
-        .sidebar-item { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-        .sidebar-item.active { background: #6366f1; color: white; box-shadow: 0 10px 25px -5px rgba(99, 102, 241, 0.4); transform: scale(1.02); }
+        /* God Level Hover Effects */
+        .sidebar-item { transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1); position: relative; overflow: hidden; }
+        .sidebar-item::after { content: ''; position: absolute; bottom: 0; left: 50%; width: 0; height: 2px; background: white; transition: all 0.3s; transform: translateX(-50%); }
+        .sidebar-item.active::after { width: 40%; }
+        .sidebar-item.active { background: linear-gradient(135deg, #6366f1, #818cf8); color: white; transform: translateY(-2px); box-shadow: 0 10px 20px -5px rgba(99, 102, 241, 0.4); }
+        .sidebar-item:not(.active):hover { background: rgba(99, 102, 241, 0.1); transform: translateX(5px); }
+
+        .stat-card { transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1); }
+        .stat-card:hover { transform: translateY(-10px) scale(1.02); box-shadow: 0 30px 60px -12px rgba(50, 50, 93, 0.15), 0 18px 36px -18px rgba(0, 0, 0, 0.2); }
+
+        .book-card { transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1); opacity: 0; transform: translateY(20px); }
+        .book-card.loaded { opacity: 1; transform: translateY(0); }
+        .book-card:hover { transform: translateY(-5px) scale(1.03); box-shadow: 0 20px 40px -10px rgba(99, 102, 241, 0.2); }
+
+        /* Smooth Scrollbar */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        .dark ::-webkit-scrollbar-thumb { background: #334155; }
         
-        .custom-input { background: #fdfdfd; border: 1px solid #f3f4f6; padding: 1.25rem; border-radius: 1.25rem; outline: none; transition: all 0.3s; width: 100%; }
-        .dark .custom-input { background: #1e293b; border-color: #334155; color: white; }
-        .custom-input:focus { border-color: #6366f1; background: white; box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1); }
-        .dark .custom-input:focus { background: #1e293b; }
+        /* Pulse Animation for Developer Mark */
+        @keyframes devPulse { 0% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.7); } 70% { box-shadow: 0 0 0 10px rgba(99, 102, 241, 0); } 100% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0); } }
+        .dev-mark { animation: devPulse 2s infinite; }
 
-        .btn-primary { background: #6366f1; color: white; padding: 1.25rem; border-radius: 1.25rem; font-weight: 800; font-size: 1.1rem; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        .btn-primary:hover { background: #4f46e5; transform: translateY(-3px); box-shadow: 0 15px 30px rgba(99, 102, 241, 0.3); }
-        .btn-primary:active { transform: scale(0.95); }
-
-        /* God Level Confetti */
-        .confetti { position: absolute; width: 8px; height: 8px; background: #6366f1; border-radius: 50%; pointer-events: none; z-index: 100; }
+        /* Confetti for Returns */
+        .confetti { position: absolute; width: 10px; height: 10px; background: #10b981; border-radius: 50%; opacity: 0; pointer-events: none; }
     </style>
 </head>
-<body>
+<body class="text-slate-900 dark:text-slate-100 min-h-screen transition-colors duration-500">
 
-    <aside id="sidebar" class="fixed left-0 top-0 h-full w-64 p-8 z-50 transition-transform -translate-x-full lg:translate-x-0">
-        <div class="flex items-center gap-4 mb-14 px-2">
-            <div class="h-12 w-12 bg-indigo-600 rounded-2xl flex items-center justify-center text-white text-xl shadow-lg">
-                <i class="fas fa-user"></i>
+    <aside id="sidebar" class="fixed left-0 top-0 h-full w-72 glass border-r z-50 transition-transform duration-500 cubic-bezier(0.23, 1, 0.32, 1) -translate-x-full lg:translate-x-0">
+        <div class="p-8 flex flex-col h-full">
+            <div class="flex items-center gap-4 mb-16 p-3 bg-white dark:bg-slate-900 rounded-3xl shadow-inner border border-slate-100 dark:border-slate-800">
+                <div class="h-14 w-14 bg-indigo-600 rounded-2xl flex items-center justify-center text-white text-2xl shadow-lg dev-mark">
+                    <i class="fas fa-crown"></i>
+                </div>
+                <div>
+                    <p class="text-[11px] uppercase font-extrabold text-slate-400 tracking-widest leading-none">Architect</p>
+                    <h1 class="text-2xl font-black tracking-tighter text-indigo-600 dark:text-indigo-400 animate__animated animate__fadeIn">ISUF</h1>
+                </div>
             </div>
-            <div>
-                <p class="text-[10px] uppercase font-bold text-slate-400 tracking-widest leading-none">Developer</p>
-                <h1 class="text-xl font-black text-indigo-600 dark:text-indigo-400">made by ISUF</h1>
-            </div>
-        </div>
 
-        <nav class="space-y-4">
-            <button onclick="switchTab('dashboard')" class="sidebar-item w-full flex items-center gap-4 px-6 py-4 rounded-2xl font-bold transition-all text-slate-500 dark:text-slate-400" data-tab="dashboard"><i class="fas fa-th-large"></i> Dashboard</button>
-            <button onclick="switchTab('books')" class="sidebar-item w-full flex items-center gap-4 px-6 py-4 rounded-2xl font-bold transition-all text-slate-500 dark:text-slate-400" data-tab="books"><i class="fas fa-book"></i> Manage Books</button>
-            <button onclick="switchTab('issue')" class="sidebar-item active w-full flex items-center gap-4 px-6 py-4 rounded-2xl font-bold transition-all" data-tab="issue"><i class="fas fa-exchange-alt"></i> Issue / Return</button>
-            <button onclick="switchTab('students')" class="sidebar-item w-full flex items-center gap-4 px-6 py-4 rounded-2xl font-bold transition-all text-slate-500 dark:text-slate-400" data-tab="students"><i class="fas fa-users"></i> Student Database</button>
-        </nav>
-
-        <div class="absolute bottom-10 left-8 right-8">
-            <button onclick="toggleDarkMode()" class="w-full py-4 bg-white dark:bg-slate-800 rounded-2xl shadow-sm flex items-center justify-center gap-3 font-bold hover:scale-105 transition-all">
-                <i id="theme-icon" class="fas fa-moon"></i> <span>Dark Mode</span>
-            </button>
-            <div class="text-center mt-8">
-                <p class="text-[10px] text-slate-400 font-bold uppercase tracking-[0.2em]">ISUF Library Pro v4.0</p>
+            <nav class="space-y-3 flex-grow">
+                <button onclick="switchTab('dashboard')" class="sidebar-item active w-full flex items-center gap-4 px-5 py-4 rounded-2xl text-lg font-semibold" data-tab="dashboard"><i class="fas fa-th-large w-6 text-center"></i> Dashboard</button>
+                <button onclick="switchTab('books')" class="sidebar-item w-full flex items-center gap-4 px-5 py-4 rounded-2xl text-lg font-semibold" data-tab="books"><i class="fas fa-book-open w-6 text-center"></i> Inventory</button>
+                <button onclick="switchTab('issue')" class="sidebar-item w-full flex items-center gap-4 px-5 py-4 rounded-2xl text-lg font-semibold" data-tab="issue"><i class="fas fa-exchange-alt w-6 text-center"></i> Issue Hub</button>
+                <button onclick="switchTab('students')" class="sidebar-item w-full flex items-center gap-4 px-5 py-4 rounded-2xl text-lg font-semibold" data-tab="students"><i class="fas fa-user-friends w-6 text-center"></i> Users</button>
+            </nav>
+            
+            <div class="mt-auto pt-10 text-center border-t border-slate-200 dark:border-slate-800">
+                <button onclick="toggleDarkMode()" class="w-full py-4 glass rounded-2xl mb-5 flex items-center justify-center gap-3 hover:scale-105 transition-all text-lg font-bold">
+                    <i id="theme-icon" class="fas fa-moon text-indigo-500"></i> <span id="theme-text">Dark Mode</span>
+                </button>
+                <p class="text-xs text-slate-400 font-bold tracking-widest">ISUF LIBRARY OS v9.0 | GOD MODE</p>
             </div>
         </div>
     </aside>
 
-    <main class="lg:ml-64 p-6 md:p-14">
-        <header class="flex justify-between items-center mb-12">
-            <h2 id="page-title" class="text-4xl font-black text-slate-800 dark:text-white tracking-tight">Issue / Return</h2>
-            <button onclick="toggleSidebar()" class="lg:hidden p-3 bg-white dark:bg-slate-800 rounded-2xl shadow-md"><i class="fas fa-bars"></i></button>
+    <main class="lg:ml-72 p-6 md:p-12 transition-all duration-500">
+        <header class="flex justify-between items-center mb-12 animate__animated animate__fadeInDown">
+            <div>
+                <h2 id="page-title" class="text-4xl font-black tracking-tighter">System Overview</h2>
+                <p class="text-slate-500 dark:text-slate-400 mt-1">Welcome to the future of library management.</p>
+            </div>
+            <button onclick="toggleSidebar()" class="lg:hidden p-4 glass rounded-2xl shadow-xl hover:scale-110 transition-all text-xl"><i class="fas fa-bars"></i></button>
         </header>
 
-        <section id="dashboard" class="tab-content">
+        <section id="dashboard" class="tab-content active">
             <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">
-                <div class="bg-white dark:bg-slate-800 p-8 rounded-[2.5rem] shadow-sm border border-slate-50 dark:border-slate-700 stat-box">
-                    <p class="text-slate-400 text-xs font-bold uppercase mb-2">Total Books</p>
-                    <h3 id="stat-books" class="text-4xl font-black">0</h3>
+                <div class="glass p-8 rounded-[2rem] stat-card border-b-4 border-indigo-500">
+                    <div class="flex justify-between items-center mb-4"><p class="text-indigo-600 dark:text-indigo-400 text-sm font-bold uppercase tracking-widest">Total Assets</p><i class="fas fa-book text-2xl opacity-30"></i></div>
+                    <h3 id="stat-books" class="text-5xl font-black tracking-tight">0</h3>
                 </div>
-                <div class="bg-white dark:bg-slate-800 p-8 rounded-[2.5rem] shadow-sm border border-slate-50 dark:border-slate-700 stat-box">
-                    <p class="text-slate-400 text-xs font-bold uppercase mb-2">Issued Books</p>
-                    <h3 id="stat-issued" class="text-4xl font-black text-indigo-600">0</h3>
+                <div class="glass p-8 rounded-[2rem] stat-card border-b-4 border-amber-500">
+                    <div class="flex justify-between items-center mb-4"><p class="text-amber-600 text-sm font-bold uppercase tracking-widest">Active Leases</p><i class="fas fa-hand-holding text-2xl opacity-30"></i></div>
+                    <h3 id="stat-issued" class="text-5xl font-black text-amber-500 tracking-tight">0</h3>
                 </div>
-                <div class="bg-white dark:bg-slate-800 p-8 rounded-[2.5rem] shadow-sm border border-slate-50 dark:border-slate-700 stat-box">
-                    <p class="text-slate-400 text-xs font-bold uppercase mb-2">Students</p>
-                    <h3 id="stat-students" class="text-4xl font-black">0</h3>
+                <div class="glass p-8 rounded-[2rem] stat-card border-b-4 border-emerald-500">
+                    <div class="flex justify-between items-center mb-4"><p class="text-emerald-600 text-sm font-bold uppercase tracking-widest">Registered Users</p><i class="fas fa-users text-2xl opacity-30"></i></div>
+                    <h3 id="stat-students" class="text-5xl font-black text-emerald-500 tracking-tight">0</h3>
                 </div>
-                <div class="bg-white dark:bg-slate-800 p-8 rounded-[2.5rem] shadow-sm border border-slate-50 dark:border-slate-700 stat-box">
-                    <p class="text-slate-400 text-xs font-bold uppercase mb-2">History</p>
-                    <h3 id="stat-history" class="text-4xl font-black">0</h3>
+                <div class="glass p-8 rounded-[2rem] stat-card border-b-4 border-slate-500">
+                    <div class="flex justify-between items-center mb-4"><p class="text-slate-500 text-sm font-bold uppercase tracking-widest">Archive Size</p><i class="fas fa-archive text-2xl opacity-30"></i></div>
+                    <h3 id="stat-history" class="text-5xl font-black tracking-tight">0</h3>
                 </div>
             </div>
-            <div class="bg-white dark:bg-slate-800 p-8 rounded-[2.5rem] shadow-sm">
-                <h4 class="font-bold mb-6 flex items-center gap-2"><i class="fas fa-history text-indigo-600"></i> Recent Activity</h4>
-                <div id="logs" class="space-y-3"></div>
+            
+            <div class="glass p-8 rounded-[2rem] animate__animated animate__fadeInUp">
+                <h4 class="text-xl font-bold mb-6 flex items-center gap-3 text-indigo-600"><i class="fas fa-bolt animate-pulse text-amber-500"></i> Real-time System Logs</h4>
+                <div id="logs" class="space-y-3 max-h-80 overflow-y-auto pr-3"></div>
             </div>
         </section>
 
         <section id="books" class="tab-content">
-            <div class="flex flex-wrap gap-4 mb-10">
-                <input type="text" id="book-search" oninput="renderBooks()" placeholder="Search Book by ID or Name..." class="flex-1 custom-input shadow-sm">
-                <button onclick="toggleModal('book-modal')" class="px-10 py-5 bg-indigo-600 text-white rounded-[1.5rem] font-black shadow-xl hover:scale-105 transition-all">Add Book</button>
+            <div class="flex flex-wrap gap-6 mb-10 animate__animated animate__fadeIn">
+                <div class="relative flex-1 min-w-[300px]">
+                    <i class="fas fa-search absolute left-6 top-1/2 -translate-y-1/2 text-slate-400 text-lg"></i>
+                    <input type="text" id="book-search" oninput="renderBooks()" placeholder="Quantum Search by ID, Title or Creator..." class="w-full pl-16 pr-6 py-5 glass rounded-2xl outline-none focus:ring-4 focus:ring-indigo-500/20 text-lg shadow-inner">
+                </div>
+                <button onclick="toggleModal('book-modal')" class="px-10 py-5 bg-indigo-600 text-white rounded-2xl font-bold text-lg shadow-xl shadow-indigo-500/30 hover:scale-105 hover:bg-indigo-700 active:scale-95 transition-all flex items-center gap-3">
+                    <i class="fas fa-plus-circle"></i> Add Asset
+                </button>
             </div>
             <div id="books-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8"></div>
         </section>
 
-        <section id="issue" class="tab-content active">
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
-                <div class="glass-card p-12 flex flex-col gap-8 animate-god-in">
-                    <h4 class="text-2xl font-black text-indigo-600 flex items-center gap-3">
-                        <i class="fas fa-bolt text-amber-500 animate-pulse"></i> Quick Issue Book
-                    </h4>
-                    <form onsubmit="handleSmartIssue(event)" class="flex flex-col gap-5">
-                        <input type="text" id="iss-book-id" placeholder="Enter Book ID" required class="custom-input">
-                        <input type="text" id="iss-student-id" placeholder="Enter Student ID" required class="custom-input">
-                        <input type="text" id="iss-student-name" placeholder="Student Name" required class="custom-input">
-                        <input type="text" id="iss-student-class" placeholder="Class / Section" required class="custom-input">
-                        <button type="submit" class="btn-primary mt-4">ISSUE NOW</button>
+        <section id="issue" class="tab-content relative">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
+                <div class="glass p-10 rounded-[2.5rem] border-2 border-indigo-500/10 shadow-2xl animate__animated animate__fadeInLeft h-fit">
+                    <h4 class="text-2xl font-black mb-8 text-indigo-600 flex items-center gap-3"><i class="fas fa-qrcode text-amber-500 animate-pulse"></i> Instant Lease</h4>
+                    <form onsubmit="handleSmartIssue(event)" class="space-y-5">
+                        <input type="text" id="iss-book-id" placeholder="Book ID (B203)" required class="w-full p-5 glass rounded-2xl outline-none text-lg">
+                        <input type="text" id="iss-student-id" placeholder="User ID (U911)" required class="w-full p-5 glass rounded-2xl outline-none text-lg">
+                        <input type="text" id="iss-student-name" placeholder="User Full Name" required class="w-full p-5 glass rounded-2xl outline-none text-lg">
+                        <input type="text" id="iss-student-class" placeholder="Dept. / Roll No." required class="w-full p-5 glass rounded-2xl outline-none text-lg">
+                        <button type="submit" class="w-full py-5 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-2xl font-black text-xl shadow-xl hover:opacity-90 active:scale-95 transition-all uppercase tracking-wider">Authorize Lease <i class="fas fa-arrow-right ml-2"></i></button>
                     </form>
                 </div>
 
-                <div class="bg-white dark:bg-slate-800 rounded-[2.5rem] overflow-hidden shadow-sm flex flex-col border border-slate-50 dark:border-slate-700">
-                    <div class="p-8 bg-indigo-600 text-white font-black text-lg flex justify-between items-center tracking-tight">
-                        <span>Currently Issued Books</span>
-                        <i class="fas fa-sync-alt animate-spin-slow"></i>
+                <div class="lg:col-span-2 glass rounded-[2.5rem] overflow-hidden animate__animated animate__fadeInRight shadow-xl">
+                    <div class="p-6 bg-indigo-600 text-white font-bold flex justify-between items-center text-lg">
+                        <span>Live Lease Registry</span>
+                        <i class="fas fa-server animate-pulse"></i>
                     </div>
-                    <div class="overflow-x-auto">
+                    <div class="overflow-x-auto max-h-[500px] overflow-y-auto">
                         <table class="w-full text-left">
-                            <thead class="bg-slate-50 dark:bg-slate-900/50 text-[11px] uppercase text-slate-400 font-black tracking-[0.15em] border-b border-slate-100 dark:border-slate-800">
-                                <tr><th class="p-6">Book</th><th class="p-6">Issued To</th><th class="p-6 text-right">Action</th></tr>
+                            <thead class="bg-slate-50 dark:bg-slate-900/50 text-[11px] uppercase tracking-widest font-bold sticky top-0 z-10 text-slate-500 dark:text-slate-400">
+                                <tr><th class="p-5">Asset</th><th class="p-5">Leased To</th><th class="p-5 text-right">Operation</th></tr>
                             </thead>
-                            <tbody id="issued-list" class="divide-y divide-slate-50 dark:divide-slate-800"></tbody>
+                            <tbody id="issued-list" class="divide-y divide-slate-100 dark:divide-slate-800"></tbody>
                         </table>
                     </div>
                 </div>
@@ -146,105 +167,103 @@
         </section>
 
         <section id="students" class="tab-content">
-            <div class="bg-white dark:bg-slate-800 rounded-[2.5rem] overflow-hidden shadow-sm border border-slate-50 dark:border-slate-700">
+            <div class="glass rounded-[2rem] overflow-hidden shadow-2xl animate__animated animate__fadeIn">
                 <table class="w-full text-left">
-                    <thead class="bg-indigo-600 text-white uppercase text-xs tracking-widest font-black">
-                        <tr><th class="p-7">ID</th><th class="p-7">Name</th><th class="p-7">Class</th><th class="p-7 text-right">Action</th></tr>
-                    </thead>
-                    <tbody id="student-list" class="divide-y divide-slate-50 dark:divide-slate-800 text-sm"></tbody>
+                    <thead class="bg-indigo-600 text-white uppercase text-xs tracking-wider"><tr><th class="p-6">User ID</th><th class="p-6">Name</th><th class="p-6">Dept. / Class</th><th class="p-6 text-right">Control</th></tr></thead>
+                    <tbody id="student-list" class="divide-y divide-slate-100 dark:divide-slate-800"></tbody>
                 </table>
             </div>
         </section>
     </main>
 
     <div id="book-modal" class="fixed inset-0 bg-black/60 hidden items-center justify-center z-[100] backdrop-blur-sm p-4">
-        <div class="bg-white dark:bg-slate-800 max-w-md w-full rounded-[2.5rem] p-10 shadow-2xl scale-0 modal-box">
-            <h3 class="text-2xl font-black mb-8 tracking-tight">Inventory Entry</h3>
-            <form onsubmit="handleBookAdd(event)" class="space-y-5">
-                <input type="text" id="nb-id" placeholder="Book ID" required class="custom-input">
-                <input type="text" id="nb-name" placeholder="Book Title" required class="custom-input">
-                <input type="text" id="nb-cat" placeholder="Category" class="custom-input">
-                <div class="flex gap-4 pt-6">
-                    <button type="button" onclick="toggleModal('book-modal')" class="flex-1 font-bold text-slate-400 hover:text-red-500 transition-colors">Cancel</button>
-                    <button type="submit" class="flex-1 py-5 bg-indigo-600 text-white rounded-2xl font-black shadow-lg">Save Asset</button>
+        <div class="glass max-w-md w-full rounded-[2.5rem] p-8">
+            <h3 class="text-2xl font-black mb-6">Inventory Entry</h3>
+            <form onsubmit="handleBookAdd(event)" class="space-y-4">
+                <input type="text" id="nb-id" placeholder="Book ID" required class="w-full p-4 bg-slate-100 dark:bg-slate-800 rounded-2xl outline-none">
+                <input type="text" id="nb-name" placeholder="Book Title" required class="w-full p-4 bg-slate-100 dark:bg-slate-800 rounded-2xl outline-none">
+                <input type="text" id="nb-cat" placeholder="Category" class="w-full p-4 bg-slate-100 dark:bg-slate-800 rounded-2xl outline-none">
+                <div class="flex gap-4 pt-4">
+                    <button type="button" onclick="toggleModal('book-modal')" class="flex-1 font-bold text-slate-400">Cancel</button>
+                    <button type="submit" class="flex-1 py-4 bg-indigo-600 text-white rounded-2xl font-bold">Save</button>
                 </div>
             </form>
         </div>
     </div>
 
     <script>
-        // STATE ENGINE
+        // --- DB & STATE ---
         let db = {
-            books: JSON.parse(localStorage.getItem('isuf_vfinal_books')) || [],
-            students: JSON.parse(localStorage.getItem('isuf_vfinal_students')) || [],
-            issued: JSON.parse(localStorage.getItem('isuf_vfinal_issued')) || [],
-            history: JSON.parse(localStorage.getItem('isuf_vfinal_history')) || [],
-            logs: JSON.parse(localStorage.getItem('isuf_vfinal_logs')) || []
+            books: JSON.parse(localStorage.getItem('lib_god_books')) || [],
+            students: JSON.parse(localStorage.getItem('lib_god_students')) || [],
+            issued: JSON.parse(localStorage.getItem('lib_god_issued')) || [],
+            history: JSON.parse(localStorage.getItem('lib_god_history')) || [],
+            logs: JSON.parse(localStorage.getItem('lib_god_logs')) || []
         };
 
         const sync = () => {
-            Object.keys(db).forEach(k => localStorage.setItem('isuf_vfinal_'+k, JSON.stringify(db[k])));
+            Object.keys(db).forEach(k => localStorage.setItem('lib_god_'+k, JSON.stringify(db[k])));
             updateDashboard();
         };
 
-        const addLog = (msg) => {
-            db.logs.unshift({ msg, time: new Date().toLocaleTimeString() });
-            db.logs = db.logs.slice(0, 8);
+        const addLog = (msg, type = 'info') => {
+            const icons = { success: 'check-circle text-emerald-500', error: 'times-circle text-red-500', info: 'info-circle text-blue-500' };
+            db.logs.unshift({ msg, icon: icons[type], time: new Date().toLocaleTimeString() });
+            db.logs = db.logs.slice(0, 10);
             sync(); renderLogs();
         };
 
-        // GOD LEVEL ANIMATIONS
-        const godLevel = {
-            switch: (nextId) => {
-                const current = document.querySelector('.tab-content.active');
-                const next = document.getElementById(nextId);
-                if (current === next) return;
-
-                gsap.to(current, { duration: 0.4, opacity: 0, y: 30, ease: "power2.in", onComplete: () => {
-                    current.classList.remove('active');
-                    next.classList.add('active');
-                    gsap.fromTo(next, { opacity: 0, y: -30 }, { duration: 0.6, opacity: 1, y: 0, ease: "back.out(1.7)" });
-                }});
-            },
+        // --- GSAP TWEEN LIBRARY (GOD MODE ANIMATIONS) ---
+        const godTween = {
+            tabIn: (el) => gsap.fromTo(el, { display: 'block', opacity: 0, scale: 0.98, y: 10 }, { duration: 0.6, opacity: 1, scale: 1, y: 0, ease: "expo.out" }),
+            tabOut: (el) => gsap.to(el, { duration: 0.3, opacity: 0, scale: 0.98, y: 10, ease: "expo.in", onComplete: () => el.style.display = 'none' }),
+            modalIn: (el) => gsap.fromTo(el.querySelector('.glass'), { scale: 0.7, opacity: 0 }, { duration: 0.5, scale: 1, opacity: 1, ease: "back.out(1.7)" }),
+            modalOut: (el) => gsap.to(el.querySelector('.glass'), { duration: 0.3, scale: 0.7, opacity: 0, ease: "expo.in", onComplete: () => { el.classList.add('hidden'); el.classList.remove('flex'); } }),
+            staggerBooks: () => gsap.to(".book-card", { duration: 0.8, y: 0, opacity: 1, stagger: 0.05, ease: "power4.out" }),
             confetti: (x, y) => {
-                for (let i = 0; i < 12; i++) {
+                for (let i = 0; i < 15; i++) {
                     const c = document.createElement('div'); c.className = 'confetti'; document.body.appendChild(c);
-                    gsap.set(c, { x: x, y: y, backgroundColor: gsap.utils.random(['#6366f1', '#10b981', '#f59e0b']) });
-                    gsap.to(c, { duration: 1.2, x: x + (Math.random() - 0.5) * 200, y: y - 100, opacity: 0, scale: 0, ease: "power2.out", onComplete: () => c.remove() });
+                    gsap.fromTo(c, { x: x, y: y, opacity: 1, scale: gsap.utils.random(0.5, 1.5) }, { duration: gsap.utils.random(1, 2), x: x + gsap.utils.random(-100, 100), y: y + gsap.utils.random(-150, -50), opacity: 0, ease: "power3.out", onComplete: () => c.remove() });
                 }
             }
         };
 
+        // --- NAVIGATION ---
         function switchTab(id) {
+            const current = document.querySelector('.tab-content.active');
+            const next = document.getElementById(id);
+            if (current === next) return;
+
             document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
             document.querySelector(`[data-tab="${id}"]`).classList.add('active');
-            document.getElementById('page-title').innerText = id === 'issue' ? 'Issue / Return' : id.charAt(0).toUpperCase() + id.slice(1);
-            godLevel.switch(id);
-            if(id === 'books') renderBooks();
-            if(id === 'issue') renderIssued();
-            if(id === 'students') renderStudents();
+            document.getElementById('page-title').innerText = id === 'issue' ? 'Issue / Return Hub' : (id === 'books' ? 'Asset Inventory' : (id === 'students' ? 'User Database' : 'System Overview'));
+            if(window.innerWidth < 1024) toggleSidebar();
+
+            godTween.tabOut(current);
+            setTimeout(() => {
+                next.classList.add('active');
+                godTween.tabIn(next);
+                if(id === 'books') renderBooks();
+                if(id === 'issue') renderIssued();
+                if(id === 'students') renderStudents();
+            }, 300);
         }
 
         function toggleSidebar() { document.getElementById('sidebar').classList.toggle('-translate-x-full'); }
         
         function toggleModal(id) { 
-            const m = document.getElementById(id);
-            const box = m.querySelector('.modal-box');
-            if(m.classList.contains('hidden')) {
-                m.classList.remove('hidden'); m.classList.add('flex');
-                gsap.to(box, { duration: 0.5, scale: 1, ease: "back.out(1.7)" });
-            } else {
-                gsap.to(box, { duration: 0.3, scale: 0, onComplete: () => { m.classList.add('hidden'); m.classList.remove('flex'); }});
-            }
+            const m = document.getElementById(id); 
+            if(m.classList.contains('hidden')) { m.classList.remove('hidden'); m.classList.add('flex'); godTween.modalIn(m); }
+            else { godTween.modalOut(m); }
         }
 
-        // --- CORE ACTIONS ---
+        // --- ASSET ACTIONS ---
         function handleBookAdd(e) {
             e.preventDefault();
             const id = document.getElementById('nb-id').value.trim();
-            if(db.books.some(b => b.id === id)) return alert('Error: Book ID already registered!');
+            if(db.books.some(b => b.id === id)) return alert('Asset ID already registered!');
             db.books.push({ id, name: document.getElementById('nb-name').value, cat: document.getElementById('nb-cat').value });
-            addLog(`Book Added: ${id}`);
+            addLog(`Asset Registered: ${id}`, 'success');
             toggleModal('book-modal'); e.target.reset(); renderBooks();
         }
 
@@ -252,25 +271,25 @@
             const q = document.getElementById('book-search').value.toLowerCase();
             const grid = document.getElementById('books-grid');
             grid.innerHTML = db.books.filter(b => b.id.toLowerCase().includes(q) || b.name.toLowerCase().includes(q)).map(b => `
-                <div class="bg-white dark:bg-slate-800 p-7 rounded-[2rem] shadow-sm border border-slate-100 dark:border-slate-700 book-card opacity-0">
-                    <div class="h-10 w-10 bg-indigo-50 dark:bg-slate-700 rounded-xl flex items-center justify-center mb-5 text-indigo-600"><i class="fas fa-book"></i></div>
-                    <h5 class="font-black leading-tight h-10 line-clamp-2 text-slate-800 dark:text-white">${b.name}</h5>
-                    <p class="text-[10px] text-slate-400 font-mono mt-3 uppercase tracking-widest">ID: ${b.id}</p>
-                    <button onclick="deleteBook('${b.id}')" class="mt-5 w-full py-3 bg-red-50 dark:bg-red-900/20 text-red-600 rounded-xl text-[10px] font-black uppercase tracking-wider hover:bg-red-600 hover:text-white transition-all">Delete Asset</button>
+                <div class="glass p-6 rounded-3xl book-card">
+                    <div class="h-12 w-12 bg-indigo-100 dark:bg-slate-800 rounded-xl flex items-center justify-center mb-5 border border-indigo-200 dark:border-slate-700 shadow-inner"><i class="fas fa-book-open text-indigo-600 dark:text-indigo-400 text-xl"></i></div>
+                    <h5 class="font-bold leading-tight text-lg line-clamp-2 h-14">${b.name}</h5>
+                    <p class="text-[11px] text-slate-400 font-mono mt-2 uppercase tracking-wider">ID: ${b.id} | Class: ${b.cat}</p>
+                    <button onclick="deleteBook('${b.id}')" class="mt-5 w-full py-3 bg-red-100 dark:bg-red-950/50 text-red-600 rounded-xl text-sm font-bold hover:bg-red-600 hover:text-white transition-all"><i class="fas fa-trash-alt mr-2"></i> Delete Asset</button>
                 </div>
             `).join('');
-            gsap.to(".book-card", { duration: 0.5, opacity: 1, y: 0, stagger: 0.05, ease: "power2.out" });
+            setTimeout(godTween.staggerBooks, 50);
         }
 
         function deleteBook(id) {
-            if(db.issued.some(i => i.bId === id)) return alert('Denied: Book is currently issued!');
-            if(confirm('Delete this book permanently?')) {
+            if(db.issued.some(i => i.bId === id)) return alert('Operation Denied: Asset currently leased!');
+            if(confirm('Confirm permanent deletion of this asset?')) {
                 db.books = db.books.filter(b => b.id !== id);
-                addLog(`Deleted Book: ${id}`); sync(); renderBooks();
+                addLog(`Asset Deleted: ${id}`, 'error'); sync(); renderBooks();
             }
         }
 
-        // SMART LOGIC (Auto Register + Update)
+        // --- INSTANT LEASE LOGIC ---
         function handleSmartIssue(e) {
             e.preventDefault();
             const bId = document.getElementById('iss-book-id').value.trim();
@@ -279,29 +298,30 @@
             const sClass = document.getElementById('iss-student-class').value;
 
             const book = db.books.find(b => b.id === bId);
-            if(!book) return alert('Error: Book ID not found!');
-            if(db.issued.some(i => i.bId === bId)) return alert('Error: Book already issued!');
+            if(!book) return alert('Operation Denied: Asset ID not found in Registry!');
+            if(db.issued.some(i => i.bId === bId)) return alert('Operation Denied: Asset already under lease!');
 
+            // Smart Auto-Registration/Update
             const sIdx = db.students.findIndex(s => s.id === sId);
             if(sIdx > -1) {
                 db.students[sIdx] = { id: sId, name: sName, class: sClass };
-                addLog(`Updated student info: ${sId}`);
+                addLog(`User Info Updated: ${sId}`, 'info');
             } else {
                 db.students.push({ id: sId, name: sName, class: sClass });
-                addLog(`Auto-Registered: ${sId}`);
+                addLog(`New User Registered: ${sId}`, 'success');
             }
 
             db.issued.push({ bId, bName: book.name, sId, sName, sClass, date: new Date().toLocaleDateString() });
-            addLog(`Issued ${bId} to ${sId}`);
+            addLog(`Lease Authorized: ${bId} → ${sId}`, 'success');
             e.target.reset(); sync(); renderIssued();
         }
 
         function renderIssued() {
             document.getElementById('issued-list').innerHTML = db.issued.map((i, idx) => `
-                <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
-                    <td class="p-6"><p class="font-black text-sm text-slate-800 dark:text-slate-100">${i.bName}</p><span class="text-[10px] text-slate-400 font-mono">${i.bId}</span></td>
-                    <td class="p-6 text-sm text-slate-600 dark:text-slate-400 font-medium">${i.sName} <br><span class="text-[10px] text-indigo-500 font-bold uppercase tracking-widest">${i.sId} | ${i.sClass}</span></td>
-                    <td class="p-6 text-right"><button onclick="returnBook(${idx}, event)" class="bg-indigo-600 text-white px-5 py-2.5 rounded-xl text-[10px] font-black tracking-widest shadow-lg hover:scale-110 transition-transform">RETURN</button></td>
+                <tr class="animate__animated animate__fadeIn">
+                    <td class="p-5 font-medium"><p class="font-bold text-lg leading-tight text-indigo-600 dark:text-indigo-400">${i.bName}</p><span class="text-xs font-mono text-slate-400">ID: ${i.bId}</span></td>
+                    <td class="p-5 text-base">${i.sName} <br><span class="text-xs text-slate-400 font-medium">ID: ${i.sId} | ${i.sClass}</span></td>
+                    <td class="p-5 text-right"><button onclick="returnBook(${idx}, event)" class="bg-emerald-100 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400 px-6 py-3 rounded-xl text-xs font-extrabold shadow-md hover:bg-emerald-600 hover:text-white transition-all uppercase tracking-wider return-btn">Terminate Lease</button></td>
                 </tr>
             `).join('');
         }
@@ -310,56 +330,61 @@
             const item = db.issued[idx];
             db.history.push({ ...item, returnDate: new Date().toLocaleDateString() });
             db.issued.splice(idx, 1);
-            addLog(`Returned: ${item.bId}`);
-            godLevel.confetti(e.clientX, e.clientY);
-            gsap.to(e.target.closest('tr'), { duration: 0.4, opacity: 0, x: 50, onComplete: () => { sync(); renderIssued(); }});
+            addLog(`Lease Terminated: ${item.bId}`, 'info');
+            const row = e.target.closest('tr');
+            gsap.to(row, { duration: 0.5, opacity: 0, x: 50, ease: "expo.in", onComplete: () => { sync(); renderIssued(); godTween.confetti(e.clientX, e.clientY); } });
         }
 
+        // --- USER DATABASE ---
         function renderStudents() {
             document.getElementById('student-list').innerHTML = db.students.map(s => `
-                <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-all">
-                    <td class="p-7 font-black text-indigo-600 font-mono">${s.id}</td>
-                    <td class="p-7 font-black text-slate-800 dark:text-slate-100">${s.name}</td>
-                    <td class="p-7 font-bold text-slate-400">${s.class}</td>
-                    <td class="p-7 text-right"><button onclick="deleteStudent('${s.id}')" class="text-red-500 font-black text-xs uppercase tracking-widest hover:scale-110 transition-transform"><i class="fas fa-user-minus"></i> Delete</button></td>
+                <tr class="hover:bg-indigo-50/50 dark:hover:bg-slate-800/50 transition-colors">
+                    <td class="p-6 font-mono text-indigo-600 dark:text-indigo-400 font-extrabold text-lg">${s.id}</td>
+                    <td class="p-6 font-bold text-base">${s.name}</td>
+                    <td class="p-6 text-sm font-medium text-slate-600 dark:text-slate-400">${s.class}</td>
+                    <td class="p-6 text-right"><button onclick="deleteStudent('${s.id}')" class="text-red-500 hover:scale-110 transition-transform"><i class="fas fa-user-slash text-lg"></i> Delete</button></td>
                 </tr>
             `).join('');
         }
 
         function deleteStudent(id) {
-            if(db.issued.some(i => i.sId === id)) return alert('Denied: Student has a book pending!');
-            if(confirm('Delete student record?')) {
+            if(db.issued.some(i => i.sId === id)) return alert('Operation Denied: User has pending leases!');
+            if(confirm('Are you sure you want to permanently remove this user?')) {
                 db.students = db.students.filter(s => s.id !== id);
-                addLog(`Student Removed: ${id}`); sync(); renderStudents();
+                addLog(`User Removed: ${id}`, 'error'); sync(); renderStudents();
             }
         }
 
+        // --- ANALYTICS & LOGS ---
         function updateDashboard() {
-            const countTo = (id, end) => {
+            // Count animations for God Level effect
+            const animateValue = (id, end) => {
                 const el = document.getElementById(id);
-                gsap.to({ val: parseInt(el.innerText) || 0 }, { duration: 1.5, val: end, ease: "power2.out", onUpdate: function() { el.innerText = Math.floor(this.targets()[0].val); } });
+                let start = parseInt(el.innerText) || 0;
+                if (start === end) return;
+                gsap.to({ val: start }, { duration: 1.5, val: end, ease: "expo.out", onUpdate: function() { el.innerText = Math.floor(this.targets()[0].val); } });
             };
-            countTo('stat-books', db.books.length);
-            countTo('stat-issued', db.issued.length);
-            countTo('stat-students', db.students.length);
-            countTo('stat-history', db.history.length);
+            animateValue('stat-books', db.books.length);animateValue('stat-issued', db.issued.length);animateValue('stat-students', db.students.length);animateValue('stat-history', db.history.length);
         }
 
         function renderLogs() {
-            document.getElementById('logs').innerHTML = db.logs.map(l => `<div class="p-4 bg-slate-50 dark:bg-slate-900/50 rounded-2xl flex justify-between text-[11px] font-bold"><span>${l.msg}</span><span class="text-slate-400">${l.time}</span></div>`).join('');
+            document.getElementById('logs').innerHTML = db.logs.map(l => `<div class="p-4 glass rounded-xl flex justify-between text-xs font-semibold animate__animated animate__fadeInDown"><span class="flex items-center gap-2"><i class="fas fa-${l.icon}"></i> ${l.msg}</span><span class="text-slate-400">${l.time}</span></div>`).join('');
         }
 
         function toggleDarkMode() {
             const isDark = document.documentElement.classList.toggle('dark');
-            localStorage.setItem('isuf_v5_theme', isDark ? 'dark' : 'light');
-            document.getElementById('theme-icon').className = isDark ? 'fas fa-sun' : 'fas fa-moon';
+            localStorage.setItem('lib_god_theme', isDark ? 'dark' : 'light');
+            document.getElementById('theme-icon').className = isDark ? 'fas fa-sun text-amber-500' : 'fas fa-moon text-indigo-500';
+            document.getElementById('theme-text').innerText = isDark ? 'Light Mode' : 'Dark Mode';
+            gsap.fromTo("body", { backgroundColor: isDark ? "#f1f5f9" : "#020617" }, { duration: 0.5, backgroundColor: isDark ? "#020617" : "#f1f5f9" });
         }
 
+        // --- INIT ISUF OS ---
         window.onload = () => {
-            if(localStorage.getItem('isuf_v5_theme') === 'dark') toggleDarkMode();
+            if(localStorage.getItem('lib_god_theme') === 'dark') toggleDarkMode();
             sync(); renderLogs();
-            gsap.from("#sidebar", { duration: 1, x: -200, opacity: 0, ease: "power3.out" });
-            gsap.from("main", { duration: 1, opacity: 0, delay: 0.3 });
+            gsap.from("#sidebar", { duration: 1, x: -300, ease: "expo.out" });
+            gsap.from("main", { duration: 1, opacity: 0, delay: 0.3, ease: "power2.out" });
         };
     </script>
 </body>
