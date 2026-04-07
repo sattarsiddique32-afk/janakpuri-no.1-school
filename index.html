@@ -7,285 +7,211 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    
     <script>
         tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        'sans': ['Inter', 'sans-serif'],
-                    }
-                }
-            }
+            theme: { extend: { fontFamily: { 'sans': ['Inter', 'sans-serif'] } } }
         }
     </script>
     <style>
-        .dark-mode {
-            color-scheme: dark;
-        }
-        .gradient-bg {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        }
-        .glass-effect {
-            backdrop-filter: blur(10px);
-            background: rgba(255, 255, 255, 0.25);
-        }
-        .animate-slide {
-            animation: slideIn 0.3s ease-out;
-        }
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .sidebar-hidden {
-            transform: translateX(-100%);
-        }
+        .dark-mode { color-scheme: dark; }
+        .gradient-bg { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .glass-effect { backdrop-filter: blur(10px); background: rgba(255,255,255,0.25); }
+        .sidebar-hidden { transform: translateX(-100%) !important; }
+        .section { animation: slideIn 0.3s ease-out; }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .nav-item.active { background: linear-gradient(135deg, #667eea, #764ba2) !important; color: white !important; }
     </style>
 </head>
+
 <body class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 font-sans transition-all duration-300 min-h-screen">
-    <!-- Header -->
-    <header class="gradient-bg shadow-lg">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center py-4">
-                <!-- Logo -->
+    
+    <!-- HEADER -->
+    <header class="gradient-bg shadow-lg fixed w-full z-40 top-0">
+        <div class="max-w-7xl mx-auto px-4 py-4">
+            <div class="flex justify-between items-center">
                 <div class="flex items-center space-x-3">
-                    <div class="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center backdrop-blur-sm">
+                    <div class="w-12 h-12 bg-white/30 rounded-2xl flex items-center justify-center backdrop-blur-sm">
                         <i class="fas fa-book-open text-2xl text-white"></i>
                     </div>
                     <div>
                         <h1 class="text-2xl font-bold text-white">School Library</h1>
-                        <p class="text-white/80 text-sm">Management System</p>
+                        <p class="text-white/80 text-sm font-medium">Management System</p>
                     </div>
                 </div>
-
-                <!-- Right side controls -->
-                <div class="flex items-center space-x-4">
-                    <!-- Notifications -->
-                    <button class="relative p-2 text-white/80 hover:text-white hover:bg-white/20 rounded-xl transition-all">
-                        <i class="fas fa-bell text-xl"></i>
-                        <span class="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-xs rounded-full flex items-center justify-center text-white">3</span>
-                    </button>
-
-                    <!-- Dark/Light Mode Toggle -->
+                <div class="flex items-center space-x-3">
+                    <!-- Status -->
+                    <div class="px-3 py-1 bg-green-500/20 text-green-400 text-xs font-medium rounded-full">
+                        <i class="fas fa-circle mr-1 text-green-400"></i>Online
+                    </div>
+                    <!-- Theme Toggle -->
                     <button id="themeToggle" class="p-2 text-white/80 hover:text-white hover:bg-white/20 rounded-xl transition-all">
                         <i class="fas fa-moon text-xl dark:hidden"></i>
                         <i class="fas fa-sun text-xl hidden dark:block"></i>
-                    </button>
-
-                    <!-- User Profile -->
-                    <div class="flex items-center space-x-2 cursor-pointer group">
-                        <div class="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center backdrop-blur-sm">
-                            <i class="fas fa-user text-xl text-white"></i>
-                        </div>
-                        <div class="hidden md:block">
-                            <p class="font-medium text-white">Admin</p>
-                            <p class="text-white/70 text-sm">Librarian</p>
-                        </div>
-                    </div>
-
-                    <!-- Mobile menu button -->
-                    <button id="mobileMenuBtn" class="md:hidden p-2 text-white/80 hover:text-white hover:bg-white/20 rounded-xl">
-                        <i class="fas fa-bars text-xl"></i>
                     </button>
                 </div>
             </div>
         </div>
     </header>
 
+    <!-- SIDEBAR -->
     <div class="flex">
-        <!-- Sidebar -->
-        <aside id="sidebar" class="fixed inset-y-0 left-0 z-50 w-64 bg-white/80 dark:bg-gray-800/95 backdrop-blur-xl shadow-2xl transform transition-transform duration-300 sidebar-hidden md:translate-x-0">
-            <div class="p-6">
-                <div class="space-y-2">
-                    <a href="#" onclick="showSection('dashboard')" class="flex items-center space-x-3 p-3 rounded-xl bg-gradient-to-r from-blue-500/10 to-purple-500/10 text-blue-600 dark:text-blue-400 font-medium hover:bg-blue-500/20 transition-all">
-                        <i class="fas fa-tachometer-alt text-xl"></i>
+        <aside id="sidebar" class="fixed inset-y-0 left-0 z-50 w-72 bg-white/90 dark:bg-gray-800/95 backdrop-blur-xl shadow-2xl transform transition-transform duration-300 sidebar-hidden md:translate-x-0">
+            <div class="p-8 pt-24">
+                <nav class="space-y-2">
+                    <a href="#" onclick="showSection('dashboard')" class="nav-item flex items-center space-x-3 p-4 rounded-2xl text-lg font-semibold hover:bg-gradient-to-r hover:from-blue-500 hover:to-purple-600 hover:text-white transition-all">
+                        <i class="fas fa-tachometer-alt w-6"></i>
                         <span>Dashboard</span>
                     </a>
-                    <a href="#" onclick="showSection('books')" class="flex items-center space-x-3 p-3 rounded-xl text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-blue-600 transition-all">
-                        <i class="fas fa-book text-xl"></i>
+                    <a href="#" onclick="showSection('books')" class="nav-item flex items-center space-x-3 p-4 rounded-2xl font-semibold hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-blue-600 transition-all">
+                        <i class="fas fa-book w-6"></i>
                         <span>Books</span>
                     </a>
-                    <a href="#" onclick="showSection('issue')" class="flex items-center space-x-3 p-3 rounded-xl text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-green-600 transition-all">
-                        <i class="fas fa-exchange-alt text-xl"></i>
+                    <a href="#" onclick="showSection('issue')" class="nav-item flex items-center space-x-3 p-4 rounded-2xl font-semibold hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-green-600 transition-all">
+                        <i class="fas fa-exchange-alt w-6"></i>
                         <span>Issue/Return</span>
                     </a>
-                    <a href="#" onclick="showSection('students')" class="flex items-center space-x-3 p-3 rounded-xl text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-purple-600 transition-all">
-                        <i class="fas fa-users text-xl"></i>
+                    <a href="#" onclick="showSection('students')" class="nav-item flex items-center space-x-3 p-4 rounded-2xl font-semibold hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-purple-600 transition-all">
+                        <i class="fas fa-users w-6"></i>
                         <span>Students</span>
                     </a>
-                    <a href="#" onclick="showSection('reports')" class="flex items-center space-x-3 p-3 rounded-xl text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-orange-600 transition-all">
-                        <i class="fas fa-chart-bar text-xl"></i>
-                        <span>Reports</span>
-                    </a>
-                </div>
+                </nav>
             </div>
         </aside>
 
-        <!-- Overlay for mobile sidebar -->
-        <div id="sidebarOverlay" class="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm md:hidden hidden"></div>
-
-        <!-- Main Content -->
-        <main class="flex-1 md:ml-0 md:pl-4 pt-6 pb-12 md:pb-6 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
-            <!-- Dashboard Section -->
-            <section id="dashboard" class="section active">
-                <div class="mb-8">
-                    <h2 class="text-3xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent mb-2">Dashboard</h2>
-                    <p class="text-gray-600 dark:text-gray-400">Welcome back! Here's what's happening in your library today.</p>
+        <!-- MAIN CONTENT -->
+        <main class="flex-1 pt-24 pb-12 px-6 md:ml-0 max-w-7xl mx-auto w-full">
+            
+            <!-- DASHBOARD -->
+            <section id="dashboard" class="section">
+                <div class="mb-12">
+                    <h2 class="text-4xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent mb-3">Dashboard Overview</h2>
+                    <p class="text-xl text-gray-600 dark:text-gray-400">Real-time library statistics</p>
                 </div>
 
-                <!-- Stats Cards -->
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                    <div class="glass-effect bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl rounded-2xl p-8 shadow-xl hover:shadow-2xl transition-all animate-slide border border-white/50 dark:border-gray-700/50">
-                        <div class="flex items-center justify-between">
-                            <div>
-                                <p class="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Total Books</p>
-                                <p class="text-3xl font-bold text-gray-900 dark:text-white" id="totalBooks">1,247</p>
-                            </div>
-                            <div class="w-16 h-16 bg-gradient-to-r from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center">
-                                <i class="fas fa-book text-2xl text-white"></i>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="glass-effect bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl rounded-2xl p-8 shadow-xl hover:shadow-2xl transition-all animate-slide border border-white/50 dark:border-gray-700/50">
-                        <div class="flex items-center justify-between">
-                            <div>
-                                <p class="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Issued Books</p>
-                                <p class="text-3xl font-bold text-orange-600 dark:text-orange-400" id="issuedBooks">156</p>
-                            </div>
-                            <i class="fas fa-hand-holding fas-2x text-orange-500/80"></i>
-                        </div>
-                    </div>
-
-                    <div class="glass-effect bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl rounded-2xl p-8 shadow-xl hover:shadow-2xl transition-all animate-slide border border-white/50 dark:border-gray-700/50">
-                        <div class="flex items-center justify-between">
-                            <div>
-                                <p class="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Returned Today</p>
-                                <p class="text-3xl font-bold text-green-600 dark:text-green-400" id="returnedBooks">23</p>
-                            </div>
-                            <i class="fas fa-undo fas-2x text-green-500/80"></i>
-                        </div>
-                    </div>
-
-                    <div class="glass-effect bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl rounded-2xl p-8 shadow-xl hover:shadow-2xl transition-all animate-slide border border-white/50 dark:border-gray-700/50">
-                        <div class="flex items-center justify-between">
-                            <div>
-                                <p class="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Late Returns</p>
-                                <p class="text-3xl font-bold text-red-600 dark:text-red-400" id="lateReturns">8</p>
-                            </div>
-                            <i class="fas fa-clock fas-2x text-red-500/80"></i>
-                        </div>
-                    </div>
+                <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-12" id="statsGrid">
+                    <!-- Stats load here -->
                 </div>
 
-                <!-- Category Stats -->
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-                    <div class="glass-effect bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl rounded-2xl p-8 shadow-xl border border-white/50 dark:border-gray-700/50">
-                        <h3 class="text-xl font-bold mb-6 flex items-center space-x-2">
-                            <i class="fas fa-chart-pie text-blue-500"></i>
+                <div class="grid grid-cols-1 xl:grid-cols-2 gap-8">
+                    <div class="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl rounded-3xl p-8 shadow-2xl border border-white/50 dark:border-gray-700/50">
+                        <h3 class="text-2xl font-bold mb-8 flex items-center space-x-3">
+                            <i class="fas fa-chart-pie text-3xl text-blue-500"></i>
                             <span>Books by Category</span>
                         </h3>
-                        <div class="space-y-4">
-                            <div class="flex justify-between items-center p-3 bg-blue-50 dark:bg-blue-900/30 rounded-xl">
-                                <span>Science</span>
-                                <div class="flex items-center space-x-2">
-                                    <span class="text-2xl font-bold text-blue-600 dark:text-blue-400">456</span>
-                                    <span class="text-sm text-blue-600 dark:text-blue-400">(36%)</span>
-                                </div>
-                            </div>
-                            <div class="flex justify-between items-center p-3 bg-green-50 dark:bg-green-900/30 rounded-xl">
-                                <span>SST</span>
-                                <div class="flex items-center space-x-2">
-                                    <span class="text-2xl font-bold text-green-600 dark:text-green-400">389</span>
-                                    <span class="text-sm text-green-600 dark:text-green-400">(31%)</span>
-                                </div>
-                            </div>
-                            <div class="flex justify-between items-center p-3 bg-purple-50 dark:bg-purple-900/30 rounded-xl">
-                                <span>Commerce</span>
-                                <div class="flex items-center space-x-2">
-                                    <span class="text-2xl font-bold text-purple-600 dark:text-purple-400">402</span>
-                                    <span class="text-sm text-purple-600 dark:text-purple-400">(32%)</span>
-                                </div>
-                            </div>
+                        <div id="categoryStats" class="space-y-4">
+                            <!-- Category stats -->
                         </div>
                     </div>
-
-                    <div class="glass-effect bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl rounded-2xl p-8 shadow-xl border border-white/50 dark:border-gray-700/50">
-                        <h3 class="text-xl font-bold mb-6 flex items-center space-x-2">
-                            <i class="fas fa-recent text-orange-500"></i>
+                    <div class="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl rounded-3xl p-8 shadow-2xl border border-white/50 dark:border-gray-700/50">
+                        <h3 class="text-2xl font-bold mb-8 flex items-center space-x-3">
+                            <i class="fas fa-history text-3xl text-orange-500"></i>
                             <span>Recent Activity</span>
                         </h3>
-                        <div class="space-y-3">
-                            <div class="flex items-center space-x-3 p-3 bg-gray-50 dark:bg-gray-700/50 rounded-xl">
-                                <div class="w-10 h-10 bg-green-100 dark:bg-green-900/50 rounded-xl flex items-center justify-center">
-                                    <i class="fas fa-book text-green-600 text-lg"></i>
-                                </div>
-                                <div class="flex-1 min-w-0">
-                                    <p class="font-medium truncate">Chemistry Vol-2 issued to Rahul Sharma</p>
-                                    <p class="text-sm text-gray-500 dark:text-gray-400">2 minutes ago</p>
-                                </div>
-                            </div>
-                            <div class="flex items-center space-x-3 p-3 bg-gray-50 dark:bg-gray-700/50 rounded-xl">
-                                <div class="w-10 h-10 bg-orange-100 dark:bg-orange-900/50 rounded-xl flex items-center justify-center">
-                                    <i class="fas fa-clock text-orange-600 text-lg"></i>
-                                </div>
-                                <div class="flex-1 min-w-0">
-                                    <p class="font-medium truncate">History book returned (Late)</p>
-                                    <p class="text-sm text-gray-500 dark:text-gray-400">1 hour ago</p>
-                                </div>
-                            </div>
+                        <div id="recentActivity" class="space-y-4 max-h-96 overflow-y-auto">
+                            <!-- Recent activity -->
                         </div>
                     </div>
                 </div>
             </section>
 
-            <!-- Books Section -->
-            <section id="books" class="section">
-                <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-8 gap-4">
+            <!-- BOOKS -->
+            <section id="books" class="section hidden">
+                <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-12 gap-4">
                     <div>
-                        <h2 class="text-3xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent mb-2">Book Management</h2>
-                        <p class="text-gray-600 dark:text-gray-400">Manage your library inventory efficiently</p>
+                        <h2 class="text-4xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent mb-2">Book Inventory</h2>
+                        <p class="text-xl text-gray-600 dark:text-gray-400">Manage all your library books</p>
                     </div>
-                    <button onclick="showAddBookModal()" class="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-8 py-3 rounded-xl font-medium hover:shadow-xl hover:scale-105 transition-all shadow-lg">
-                        <i class="fas fa-plus mr-2"></i>Add New Book
+                    <button onclick="showAddBookModal()" class="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-10 py-4 rounded-2xl font-bold text-lg shadow-xl hover:shadow-2xl hover:scale-105 transition-all">
+                        <i class="fas fa-plus mr-3"></i>Add New Book
                     </button>
                 </div>
 
-                <!-- Search and Filter -->
-                <div class="glass-effect bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl rounded-2xl p-6 mb-8 border border-white/50 dark:border-gray-700/50">
+                <div class="mb-8">
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Search Books</label>
-                            <div class="relative">
-                                <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-                                <input type="text" id="bookSearch" placeholder="Search by name or ID..." class="w-full pl-10 pr-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl bg-white/50 dark:bg-gray-700/50 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
-                            </div>
+                        <div class="relative">
+                            <input type="text" id="bookSearch" placeholder="🔍 Search books by name or ID..." 
+                                   class="w-full pl-12 pr-4 py-4 text-lg border-2 border-gray-200 dark:border-gray-600 rounded-2xl bg-white/50 dark:bg-gray-700/50 focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 transition-all">
                         </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Category</label>
-                            <select id="categoryFilter" class="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl bg-white/50 dark:bg-gray-700/50 focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                                <option>All Categories</option>
-                                <option>Science</option>
-                                <option>SST</option>
-                                <option>Commerce</option>
-                            </select>
-                        </div>
-                        <div class="flex items-end space-x-3">
-                            <button class="flex-1 bg-gray-100 dark:bg-gray-700 px-4 py-3 rounded-xl hover:bg-gray-200 dark:hover:bg-gray-600 transition-all text-gray-700 dark:text-gray-300">
-                                <i class="fas fa-filter mr-2"></i>Filter
-                            </button>
-                            <button class="px-4 py-3 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300">
-                                <i class="fas fa-refresh text-xl"></i>
-                            </button>
-                        </div>
+                        <select id="categoryFilter" class="px-4 py-4 text-lg border-2 border-gray-200 dark:border-gray-600 rounded-2xl bg-white/50 dark:bg-gray-700/50 focus:ring-4 focus:ring-purple-500/20 focus:border-purple-500">
+                            <option>All Categories</option>
+                            <option>Science</option>
+                            <option>SST</option>
+                            <option>Commerce</option>
+                        </select>
+                        <button onclick="loadBooks()" class="bg-gradient-to-r from-green-600 to-green-500 text-white py-4 px-6 rounded-2xl font-bold text-lg hover:shadow-xl transition-all">
+                            <i class="fas fa-refresh mr-2"></i>Refresh
+                        </button>
                     </div>
                 </div>
 
-                <!-- Books Grid -->
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <!-- Sample Book Cards -->
-                    <div class="glass-effect bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl rounded-2xl p-6 shadow-xl hover:shadow-2xl transition-all border border-white/50 dark:border-gray-700/50 group">
-                        <div class="relative mb-4">
-                            <img src="https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=400&h=600&fit=crop&crop=center" alt="Book" class="w-full h-64 object-cover rounded-xl shadow-lg group-hover:scale-105 transition-transform duration-300">
-                            <div class="absolute top-3 right-3 bg-blue-500 text-white px-3 py-1 rounded-full text-sm font-medium">Science</div>
-                        </div>
-                        <h3 class="font-bold text-xl mb-2 line-clamp-2">Chemistry Textbook Volume 2</h3
+                <div id="booksContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <div class="text-center py-20 text-gray-400 dark:text-gray-500">
+                        <i class="fas fa-book-open text-6xl mb-4 opacity-50"></i>
+                        <p class="text-2xl font-semibold">No books found</p>
+                        <p>Add your first book to get started!</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ISSUE/RETURN -->
+            <section id="issue" class="section hidden">
+                <div class="mb-12">
+                    <h2 class="text-4xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent mb-2">Issue & Return Books</h2>
+                    <p class="text-xl text-gray-600 dark:text-gray-400">Manage book transactions</p>
+                </div>
+
+                <div class="grid grid-cols-1 xl:grid-cols-2 gap-12 mb-16">
+                    <!-- Issue Form -->
+                    <div class="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl rounded-3xl p-10 shadow-2xl border border-white/50 dark:border-gray-700/50">
+                        <h3 class="text-3xl font-bold mb-8 text-green-600 dark:text-green-400 flex items-center space-x-3">
+                            <i class="fas fa-hand-holding text-3xl"></i>
+                            <span>Issue Book</span>
+                        </h3>
+                        <form id="issueForm" class="space-y-6">
+                            <div>
+                                <label class="block text-lg font-semibold mb-3">Book Number</label>
+                                <input type="text" id="issueBookId" placeholder="Enter book ID (auto-fetches details)" 
+                                       class="w-full px-6 py-4 text-lg border-2 border-gray-200 dark:border-gray-600 rounded-2xl focus:ring-4 focus:ring-green-500/20 focus:border-green-500 transition-all">
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-lg font-semibold mb-3">Student Name</label>
+                                    <input type="text" id="studentName" required class="w-full px-6 py-4 text-lg border-2 border-gray-200 dark:border-gray-600 rounded-2xl focus:ring-4 focus:ring-green-500/20">
+                                </div>
+                                <div>
+                                    <label class="block text-lg font-semibold mb-3">Class</label>
+                                    <input type="text" id="studentClass" required class="w-full px-6 py-4 text-lg border-2 border-gray-200 dark:border-gray-600 rounded-2xl focus:ring-4 focus:ring-green-500/20">
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-lg font-semibold mb-3">Roll Number</label>
+                                    <input type="text" id="studentRoll" required class="w-full px-6 py-4 text-lg border-2 border-gray-200 dark:border-gray-600 rounded-2xl focus:ring-4 focus:ring-green-500/20">
+                                </div>
+                                <div>
+                                    <label class="block text-lg font-semibold mb-3">Student ID</label>
+                                    <input type="text" id="studentId" class="w-full px-6 py-4 text-lg border-2 border-gray-200 dark:border-gray-600 rounded-2xl focus:ring-4 focus:ring-green-500/20">
+                                </div>
+                            </div>
+                            <button type="submit" class="w-full bg-gradient-to-r from-green-600 to-green-500 text-white py-6 px-8 rounded-2xl text-xl font-bold shadow-xl hover:shadow-2xl hover:scale-105 transition-all">
+                                <i class="fas fa-paper-plane mr-3"></i>Issue Book Now
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Return Form -->
+                    <div class="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl rounded-3xl p-10 shadow-2xl border border-white/50 dark:border-gray-700/50">
+                        <h3 class="text-3xl font-bold mb-8 text-orange-600 dark:text-orange-400 flex items-center space-x-3">
+                            <i class="fas fa-undo text-3xl"></i>
+                            <span>Return Book</span>
+                        </h3>
+                        <form id="returnForm" class="space-y-6">
+                            <div>
+                                <label class="block text-lg font-semibold mb-3">Book Number</label>
+                                <input type="text" id="returnBookId" placeholder="Enter book ID to return" 
+                                       class="w-full px-6 py-4 text-lg border-2 border-gray-200 dark:border-gray-600
