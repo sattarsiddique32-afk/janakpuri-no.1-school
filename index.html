@@ -5,33 +5,68 @@
   <title>Library Management Web App</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    /* Custom Animations */
-    .fade-in { animation: fadeIn 0.8s ease-in-out; }
-    @keyframes fadeIn { from {opacity:0;} to {opacity:1;} }
+    /* Animated Gradient Background */
+    body {
+      background: linear-gradient(-45deg, #e0f7fa, #e3f2fd, #f3e5f5, #fffde7);
+      background-size: 400% 400%;
+      animation: gradientShift 15s ease infinite;
+    }
+    @keyframes gradientShift {
+      0% {background-position:0% 50%;}
+      50% {background-position:100% 50%;}
+      100% {background-position:0% 50%;}
+    }
 
-    .slide-in { animation: slideIn 0.6s ease-in-out; }
-    @keyframes slideIn { from {transform:translateX(50px);opacity:0;} to {transform:translateX(0);opacity:1;} }
+    /* Glassmorphism */
+    .glass {
+      background: rgba(255,255,255,0.6);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255,255,255,0.3);
+    }
 
+    /* Glow animation */
     .glow { animation: glowPulse 2s infinite alternate; }
     @keyframes glowPulse {
       from { text-shadow: 0 0 5px #6ee7b7; }
       to { text-shadow: 0 0 15px #3b82f6; }
     }
 
-    .toast { transition: opacity 0.5s ease; }
+    /* Ripple effect */
+    .ripple {
+      position: relative;
+      overflow: hidden;
+    }
+    .ripple:after {
+      content:"";
+      position:absolute;
+      background:rgba(255,255,255,0.5);
+      border-radius:50%;
+      transform:scale(0);
+      opacity:0;
+      pointer-events:none;
+      animation:rippleAnim 0.6s linear;
+    }
+    @keyframes rippleAnim {
+      to { transform:scale(4); opacity:0; }
+    }
+
+    /* Dark mode */
+    .dark body { background: #1e293b; }
+    .dark .glass { background: rgba(30,41,59,0.7); color:white; }
   </style>
 </head>
-<body class="bg-gradient-to-r from-blue-50 to-indigo-100 min-h-screen flex">
+<body class="min-h-screen flex transition-colors duration-500">
 
   <!-- Sidebar -->
-  <aside class="w-64 bg-white shadow-lg p-6">
+  <aside class="w-64 glass shadow-lg p-6">
     <h1 class="text-2xl font-bold mb-6">Library</h1>
     <nav class="space-y-4">
-      <button class="nav-btn w-full text-left p-2 rounded hover:bg-blue-100" data-page="dashboard">Dashboard</button>
-      <button class="nav-btn w-full text-left p-2 rounded hover:bg-blue-100" data-page="addBook">Add Book</button>
-      <button class="nav-btn w-full text-left p-2 rounded hover:bg-blue-100" data-page="issueBook">Issue Book</button>
-      <button class="nav-btn w-full text-left p-2 rounded hover:bg-blue-100" data-page="records">Records</button>
+      <button class="nav-btn ripple w-full text-left p-2 rounded hover:bg-blue-100" data-page="dashboard">Dashboard</button>
+      <button class="nav-btn ripple w-full text-left p-2 rounded hover:bg-blue-100" data-page="addBook">Add Book</button>
+      <button class="nav-btn ripple w-full text-left p-2 rounded hover:bg-blue-100" data-page="issueBook">Issue Book</button>
+      <button class="nav-btn ripple w-full text-left p-2 rounded hover:bg-blue-100" data-page="records">Records</button>
     </nav>
+    <button id="toggleTheme" class="mt-6 bg-indigo-500 text-white px-4 py-2 rounded">Toggle Dark/Light</button>
   </aside>
 
   <!-- Main Content -->
@@ -40,138 +75,96 @@
   </main>
 
   <!-- Footer Branding -->
-  <footer class="fixed bottom-2 right-2 text-sm glow">
-    MADE BY ISUF 👑
+  <footer class="fixed bottom-2 right-2 text-sm glow flex items-center space-x-2">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="gold"><path d="M12 2l3 7h7l-5.5 4.5L18 21l-6-4-6 4 1.5-7.5L2 9h7z"/></svg>
+    <span>MADE BY ISUF 👑</span>
   </footer>
 
   <!-- JavaScript -->
   <script>
-    // ===============================
-    // Library Management Web App
-    // ===============================
-
-    // Global State
+    // State
     let books = JSON.parse(localStorage.getItem('books')) || [];
     let issued = JSON.parse(localStorage.getItem('issued')) || [];
 
-    // Utility: Save to localStorage
-    function saveData() {
+    // Save
+    function saveData(){
       localStorage.setItem('books', JSON.stringify(books));
       localStorage.setItem('issued', JSON.stringify(issued));
     }
 
-    // Utility: Toast Notification
-    function showToast(message, type="success") {
-      const toast = document.createElement('div');
-      toast.className = `toast fixed top-4 right-4 px-4 py-2 rounded shadow-lg 
-        ${type==="success" ? "bg-green-500 text-white" : "bg-red-500 text-white"} fade-in`;
-      toast.innerText = message;
-      document.body.appendChild(toast);
-      setTimeout(()=>toast.style.opacity="0", 2500);
-      setTimeout(()=>toast.remove(), 3000);
+    // Toast
+    function showToast(msg,type="success"){
+      const t=document.createElement('div');
+      t.className=`fixed top-4 right-4 px-4 py-2 rounded shadow-lg ${type==="success"?"bg-green-500":"bg-red-500"} text-white`;
+      t.innerText=msg;
+      document.body.appendChild(t);
+      setTimeout(()=>t.remove(),3000);
     }
 
-    // Page Loader
-    function loadPage(page) {
-      const main = document.getElementById('mainContent');
-      main.innerHTML = ""; // clear
-      if(page==="dashboard") renderDashboard(main);
-      if(page==="addBook") renderAddBook(main);
-      if(page==="issueBook") renderIssueBook(main);
-      if(page==="records") renderRecords(main);
+    // Page Loader with transition
+    function loadPage(page){
+      const main=document.getElementById('mainContent');
+      main.style.opacity=0;
+      setTimeout(()=>{
+        main.innerHTML="";
+        if(page==="dashboard") renderDashboard(main);
+        if(page==="addBook") renderAddBook(main);
+        if(page==="issueBook") renderIssueBook(main);
+        if(page==="records") renderRecords(main);
+        main.style.opacity=1;
+      },300);
     }
 
     // Dashboard
-    function renderDashboard(container) {
-      const total = books.length;
-      const issuedCount = issued.length;
-      const available = total - issuedCount;
-
-      container.innerHTML = `
+    function renderDashboard(c){
+      const total=books.length, issuedCount=issued.length, available=total-issuedCount;
+      c.innerHTML=`
         <h2 class="text-3xl font-bold mb-6">Dashboard</h2>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-          ${statCard("Total Books", total, "📚")}
-          ${statCard("Issued Books", issuedCount, "✅")}
-          ${statCard("Available Books", available, "📖")}
-        </div>
-      `;
+          ${statCard("Total Books",total,"📚")}
+          ${statCard("Issued Books",issuedCount,"✅")}
+          ${statCard("Available Books",available,"📖")}
+        </div>`;
+    }
+    function statCard(title,val,icon){
+      return `<div class="glass p-6 rounded shadow hover:shadow-xl transition transform hover:-translate-y-1">
+        <div class="text-4xl">${icon}</div>
+        <h3 class="text-xl font-semibold">${title}</h3>
+        <p class="text-2xl font-bold">${val}</p>
+      </div>`;
     }
 
-    // Stat Card Component
-    function statCard(title, value, icon) {
-      return `
-        <div class="bg-white p-6 rounded shadow hover:shadow-xl transition transform hover:-translate-y-1 slide-in">
-          <div class="text-4xl">${icon}</div>
-          <h3 class="text-xl font-semibold">${title}</h3>
-          <p class="text-2xl font-bold">${value}</p>
-        </div>
-      `;
-    }
-
-    // Add Book Page
-    function renderAddBook(container) {
-      container.innerHTML = `
+    // Add Book
+    function renderAddBook(c){
+      c.innerHTML=`
         <h2 class="text-3xl font-bold mb-6">Add Book</h2>
         <form id="addBookForm" class="space-y-4">
           <input type="file" accept="image/*" capture="camera" class="block w-full border p-2 rounded" id="bookImage">
           <input type="text" placeholder="Book Number (required)" class="block w-full border p-2 rounded" id="bookNumber" required>
           <input type="text" placeholder="Book Name" class="block w-full border p-2 rounded" id="bookName">
           <input type="text" placeholder="Book Category" class="block w-full border p-2 rounded" id="bookCategory">
-          <button class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition">Save Book</button>
+          <button class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition ripple">Save Book</button>
         </form>
-        <div id="preview" class="mt-4"></div>
-      `;
-
-      document.getElementById('bookImage').addEventListener('change', e=>{
-        const file = e.target.files[0];
-        if(file){
-          const reader = new FileReader();
-          reader.onload = ()=> {
-            document.getElementById('preview').innerHTML = `<img src="${reader.result}" class="w-32 h-32 object-cover rounded">`;
-          };
-          reader.readAsDataURL(file);
-        }
+        <div id="preview" class="mt-4"></div>`;
+      document.getElementById('bookImage').addEventListener('change',e=>{
+        const f=e.target.files[0]; if(f){const r=new FileReader(); r.onload=()=>{document.getElementById('preview').innerHTML=`<img src="${r.result}" class="w-32 h-32 object-cover rounded">`;}; r.readAsDataURL(f);}
       });
-
-      document.getElementById('addBookForm').addEventListener('submit', e=>{
+      document.getElementById('addBookForm').addEventListener('submit',e=>{
         e.preventDefault();
-        const number = document.getElementById('bookNumber').value.trim();
-        if(!number){ showToast("Book Number is required","error"); return; }
-        const name = document.getElementById('bookName').value.trim();
-        const category = document.getElementById('bookCategory').value.trim();
-        const image = document.querySelector('#preview img')?.src || "";
-
-        books.push({number, name, category, image});
-        saveData();
-        showToast("Book added successfully!");
+        const num=document.getElementById('bookNumber').value.trim();
+        if(!num){showToast("Book Number required","error");return;}
+        const name=document.getElementById('bookName').value.trim();
+        const cat=document.getElementById('bookCategory').value.trim();
+        const img=document.querySelector('#preview img')?.src||"";
+        books.push({number:num,name,category:cat,image:img});
+        saveData(); showToast("Book added!");
         loadPage("records");
       });
     }
 
-    // Issue Book Page (multi-step)
-    function renderIssueBook(container) {
-      container.innerHTML = `
+    // Issue Book
+    function renderIssueBook(c){
+      c.innerHTML=`
         <h2 class="text-3xl font-bold mb-6">Issue Book</h2>
-        <div id="issueSteps" class="space-y-4">
-          <div class="step" data-step="1">
-            <input type="text" placeholder="Enter Book Code" id="issueBookCode" class="border p-2 rounded w-full">
-            <button class="nextBtn bg-blue-500 text-white px-4 py-2 rounded mt-2">Next</button>
-          </div>
-          <div class="step hidden" data-step="2">
-            <input type="text" placeholder="Student ID" id="studentId" class="border p-2 rounded w-full">
-            <button class="nextBtn bg-blue-500 text-white px-4 py-2 rounded mt-2">Next</button>
-          </div>
-          <div class="step hidden" data-step="3">
-            <input type="text" placeholder="Student Name" id="studentName" class="border p-2 rounded w-full">
-            <input type="text" placeholder="Class" id="studentClass" class="border p-2 rounded w-full mt-2">
-            <input type="text" placeholder="Roll Number" id="studentRoll" class="border p-2 rounded w-full mt-2">
-            <button id="submitIssue" class="bg-green-500 text-white px-4 py-2 rounded mt-2">Submit</button>
-          </div>
-        </div>
-      `;
-
-      const steps = container.querySelectorAll('.step');
-      let currentStep = 0;
-
-      function showStep(index){
-        steps.forEach((s,i
+        <div id="issueSteps">
+          <div class="
