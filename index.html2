@@ -1,0 +1,135 @@
+// server.js
+const express = require('express');
+const mongoose = require('mongoose');
+const multer = require('multer');
+const path = require('path');
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcryptjs');
+const app = express();
+
+app.use(express.json());
+app.use('/uploads', express.static('uploads'));
+
+// Branding middleware
+app.use((req, res, next) => {
+  res.setHeader('X-App-Branding', 'MADE BY ISUF – Professional Programmer');
+  next();
+});
+
+// --- MongoDB Connection ---
+mongoose.connect('mongodb://localhost:27017/library', {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+});
+
+// --- Schemas ---
+const UserSchema = new mongoose.Schema({
+  name: String,
+  email: String,
+  role: { type: String, enum: ['Admin', 'Librarian', 'Member'] },
+  password: String
+});
+
+const StudentSchema = new mongoose.Schema({
+  name: String,
+  rollNo: String,
+  class: String,
+  email: String
+});
+
+const BookSchema = new mongoose.Schema({
+  title: String,
+  author: String,
+  genre: String,
+  ISBN: String,
+  status: { type: String, default: 'Available' },
+  coverImage: String
+});
+
+const TransactionSchema = new mongoose.Schema({
+  studentId: { type: mongoose.Schema.Types.ObjectId, ref: 'Student' },
+  bookId: { type: mongoose.Schema.Types.ObjectId, ref: 'Book' },
+  issueDate: Date,
+  dueDate: Date,
+  returnDate: Date,
+  fine: Number
+});
+
+// --- Models ---
+const User = mongoose.model('User', UserSchema);
+const Student = mongoose.model('Student', StudentSchema);
+const Book = mongoose.model('Book', BookSchema);
+const Transaction = mongoose.model('Transaction', TransactionSchema);
+
+// --- Multer setup ---
+const storage = multer.diskStorage({
+  destination: './uploads/',
+  filename: (req, file, cb) => cb(null, Date.now() + path.extname(file.originalname))
+});
+const upload = multer({ storage });
+
+// --- Authentication ---
+app.post('/register', async (req, res) => {
+  const hashedPassword = await bcrypt.hash(req.body.password, 10);
+  const user = new User({ ...req.body, password: hashedPassword });
+  await user.save();
+  res.send({ message: 'User registered successfully', branding: 'MADE BY ISUF – Professional Programmer' });
+});
+
+app.post('/login', async (req, res) => {
+  const user = await User.findOne({ email: req.body.email });
+  if (!user || !(await bcrypt.compare(req.body.password, user.password))) {
+    return res.status(401).send({ error: 'Invalid credentials' });
+  }
+  const token = jwt.sign({ id: user._id, role: user.role }, 'secretkey');
+  res.send({ token, branding: 'MADE BY ISUF – Professional Programmer' });
+});
+
+// --- Book Routes ---
+app.post('/books', upload.single('coverImage'), async (req, res) => {
+  const book = new Book({ ...req.body, coverImage: req.file.path });
+  await book.save();
+  res.send(book);
+});
+
+app.get('/books', async (req, res) => {
+  const books = await Book.find();
+  res.send(books);
+});
+
+// --- Issue Book + Add Student ---
+app.post('/issue', async (req, res) => {
+  let student = await Student.findOne({ rollNo: req.body.rollNo });
+  if (!student) {
+    student = new Student(req.body);
+    await student.save();
+  }
+  const transaction = new Transaction({
+    studentId: student._id,
+    bookId: req.body.bookId,
+    issueDate: new Date(),
+    dueDate: new Date(Date.now() + 7*24*60*60*1000)
+  });
+  await transaction.save();
+  await Book.findByIdAndUpdate(req.body.bookId, { status: 'Issued' });
+  res.send(transaction);
+});
+
+// --- Return Book ---
+app.post('/return', async (req, res) => {
+  const transaction = await Transaction.findById(req.body.transactionId);
+  transaction.returnDate = new Date();
+  transaction.fine = transaction.returnDate > transaction.dueDate ? 50 : 0;
+  await transaction.save();
+  await Book.findByIdAndUpdate(transaction.bookId, { status: 'Available' });
+  res.send(transaction);
+});
+
+// --- Reports ---
+app.get('/reports/overdue', async (req, res) => {
+  const overdue = await Transaction.find({ returnDate: null, dueDate: { $lt: new Date() } }).populate('studentId bookId');
+  res.send({ overdue, branding: 'MADE BY ISUF – Professional Programmer' });
+});
+
+// --- Start Server ---
+app.listen(3000, () => console.log('Library app running on port 3000 - MADE BY ISUF – Professional Programmer'));
