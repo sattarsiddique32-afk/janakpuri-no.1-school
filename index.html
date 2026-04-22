@@ -1,732 +1,431 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ISUF | Professional Library Management</title>
+    <title>LIBRA | Enterprise Management System</title>
     <style>
-        :root {
-            --bg-dark: #0f172a;
-            --glass: rgba(30, 41, 59, 0.7);
+        :root[data-theme="dark"] {
+            --bg-main: #0f172a;
+            --bg-side: #1e293b;
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --border: rgba(255, 255, 255, 0.1);
             --accent: #38bdf8;
-            --accent-glow: rgba(56, 189, 248, 0.5);
-            --danger: #ef4444;
-            --success: #22c55e;
-            --text-main: #f1f5f9;
-            --text-dim: #94a3b8;
-            --sidebar-w: 260px;
+            --input-bg: #0f172a;
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Inter', system-ui, sans-serif;
+        :root[data-theme="light"] {
+            --bg-main: #f1f5f9;
+            --bg-side: #ffffff;
+            --card-bg: #ffffff;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --border: #e2e8f0;
+            --accent: #0284c7;
+            --input-bg: #f8fafc;
         }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', system-ui, sans-serif; transition: background 0.3s, color 0.3s; }
 
         body {
-            background-color: var(--bg-dark);
-            color: var(--text-main);
-            display: flex;
+            background-color: var(--bg-main);
+            color: var(--text-primary);
+            display: grid;
+            grid-template-columns: 280px 1fr;
             min-height: 100vh;
-            overflow-x: hidden;
-        }
-
-        /* --- Animations --- */
-        @keyframes glow {
-            0% { text-shadow: 0 0 5px var(--accent); }
-            50% { text-shadow: 0 0 20px var(--accent), 0 0 30px var(--accent); }
-            100% { text-shadow: 0 0 5px var(--accent); }
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
         }
 
         /* --- Sidebar --- */
         aside {
-            width: var(--sidebar-w);
-            background: var(--glass);
-            backdrop-filter: blur(12px);
-            border-right: 1px solid rgba(255, 255, 255, 0.1);
+            background: var(--bg-side);
+            border-right: 1px solid var(--border);
+            padding: 2rem 1.5rem;
             display: flex;
             flex-direction: column;
-            position: fixed;
-            height: 100vh;
-            z-index: 100;
         }
 
-        .brand-area {
-            padding: 2rem 1.5rem;
-            text-align: center;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        }
+        .logo { font-size: 1.5rem; font-weight: 800; color: var(--accent); margin-bottom: 2.5rem; display: flex; align-items: center; gap: 10px; }
 
-        .brand-name {
-            font-size: 1.2rem;
-            font-weight: 800;
-            color: var(--accent);
-            animation: glow 3s infinite;
-            letter-spacing: 1px;
-        }
-
-        nav {
-            flex: 1;
-            padding: 1.5rem 1rem;
-        }
-
-        nav button {
-            width: 100%;
+        .nav-link {
             padding: 12px 16px;
-            margin-bottom: 0.5rem;
-            background: transparent;
-            border: none;
-            color: var(--text-dim);
-            text-align: left;
             border-radius: 8px;
             cursor: pointer;
-            transition: all 0.3s;
+            margin-bottom: 0.5rem;
+            color: var(--text-secondary);
             font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 12px;
         }
 
-        nav button.active, nav button:hover {
-            background: rgba(56, 189, 248, 0.1);
-            color: var(--accent);
+        .nav-link:hover, .nav-link.active {
+            background: var(--accent);
+            color: white;
         }
 
-        /* --- Main Content --- */
-        main {
-            margin-left: var(--sidebar-w);
-            flex: 1;
-            padding: 2rem;
-            max-width: calc(100vw - var(--sidebar-w));
+        /* --- Header & Controls --- */
+        header {
+            padding: 1.5rem 3rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border);
         }
 
-        .section {
-            display: none;
-            animation: fadeIn 0.4s ease-out forwards;
+        .theme-toggle {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 600;
         }
 
-        .section.active {
-            display: block;
-        }
+        /* --- Content Areas --- */
+        main { padding: 2rem 3rem; overflow-y: auto; }
 
-        /* --- Dashboard Grid --- */
-        .stats-grid {
+        .section { display: none; animation: fadeIn 0.3s ease; }
+        .section.active { display: block; }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        .dashboard-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            grid-template-columns: repeat(3, 1fr);
             gap: 1.5rem;
-            margin-bottom: 2rem;
+            margin-bottom: 3rem;
         }
 
         .stat-card {
-            background: var(--glass);
-            padding: 1.5rem;
-            border-radius: 16px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            transition: transform 0.3s;
-        }
-
-        .stat-card:hover {
-            transform: translateY(-5px);
-            border-color: var(--accent);
-        }
-
-        .stat-card h3 { color: var(--text-dim); font-size: 0.9rem; margin-bottom: 0.5rem; }
-        .stat-card p { font-size: 2rem; font-weight: 700; color: var(--accent); }
-
-        /* --- Forms & Cards --- */
-        .glass-card {
-            background: var(--glass);
+            background: var(--card-bg);
             padding: 2rem;
-            border-radius: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
         }
 
-        .form-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1.5rem;
+        .stat-card h3 { font-size: 0.85rem; text-transform: uppercase; color: var(--text-secondary); letter-spacing: 0.05em; }
+        .stat-card p { font-size: 2.5rem; font-weight: 700; margin-top: 0.5rem; color: var(--accent); }
+
+        /* --- Forms & Tables --- */
+        .admin-card {
+            background: var(--card-bg);
+            padding: 2.5rem;
+            border-radius: 16px;
+            border: 1px solid var(--border);
         }
 
-        .input-group {
-            margin-bottom: 1.2rem;
-        }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
 
-        label { display: block; margin-bottom: 0.5rem; color: var(--text-dim); font-size: 0.85rem; }
+        .form-group { margin-bottom: 1.5rem; }
+        label { display: block; margin-bottom: 0.5rem; font-size: 0.9rem; font-weight: 600; }
         
         input, select {
             width: 100%;
-            padding: 12px;
-            background: rgba(15, 23, 42, 0.6);
-            border: 1px solid rgba(255,255,255,0.1);
+            padding: 12px 16px;
+            background: var(--input-bg);
+            border: 1px solid var(--border);
             border-radius: 8px;
-            color: white;
+            color: var(--text-primary);
             outline: none;
-            transition: border 0.3s;
         }
 
         input:focus { border-color: var(--accent); }
 
-        .btn-primary {
+        .btn {
             background: var(--accent);
-            color: #000;
-            font-weight: 700;
-            padding: 12px 24px;
+            color: white;
+            padding: 12px 28px;
             border: none;
             border-radius: 8px;
+            font-weight: 600;
             cursor: pointer;
-            transition: 0.3s;
-            text-transform: uppercase;
+            transition: 0.2s;
         }
 
-        .btn-primary:hover {
-            box-shadow: 0 0 15px var(--accent-glow);
-            transform: scale(1.02);
-        }
+        .btn:hover { filter: brightness(1.1); transform: translateY(-1px); }
 
-        /* --- Camera/Image UI --- */
-        #camera-preview {
-            width: 100%;
-            height: 200px;
-            background: #000;
+        table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+        th { text-align: left; padding: 1rem; color: var(--text-secondary); border-bottom: 2px solid var(--border); }
+        td { padding: 1rem; border-bottom: 1px solid var(--border); }
+
+        .img-preview { 
+            width: 100%; height: 250px; 
+            border: 2px dashed var(--border); 
             border-radius: 12px;
-            display: none;
-            object-fit: cover;
-            margin-bottom: 10px;
+            display: flex; align-items: center; justify-content: center;
+            overflow: hidden; margin-bottom: 1rem;
         }
+        .img-preview img { width: 100%; height: 100%; object-fit: cover; }
 
-        .image-preview-box {
-            width: 100px;
-            height: 130px;
-            border: 2px dashed var(--text-dim);
-            border-radius: 8px;
-            margin-top: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-        }
-
-        .image-preview-box img { width: 100%; height: 100%; object-fit: cover; }
-
-        /* --- Tables --- */
-        .table-container {
-            overflow-x: auto;
-            margin-top: 1.5rem;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            background: transparent;
-        }
-
-        th {
-            text-align: left;
-            padding: 1rem;
-            color: var(--text-dim);
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-        }
-
-        td {
-            padding: 1rem;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-        }
-
-        .book-thumb {
-            width: 40px;
-            height: 55px;
-            border-radius: 4px;
-            object-fit: cover;
-        }
-
-        .badge {
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 0.75rem;
-            font-weight: bold;
-        }
-
-        .badge-success { background: rgba(34, 197, 94, 0.2); color: var(--success); }
-        .badge-danger { background: rgba(239, 68, 68, 0.2); color: var(--danger); }
-
-        /* --- Toast Notifications --- */
         #toast {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            padding: 1rem 2rem;
-            border-radius: 8px;
-            color: white;
-            z-index: 1000;
-            transform: translateX(200%);
-            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+            position: fixed; top: 20px; right: 20px;
+            padding: 1rem 2rem; border-radius: 8px;
+            background: #22c55e; color: white;
+            transform: translateX(150%); transition: 0.4s; z-index: 9999;
         }
 
-        #toast.show { transform: translateX(0); }
-
-        /* --- Search Bar --- */
-        .search-wrapper {
-            margin-bottom: 1.5rem;
-            position: relative;
-        }
-
-        .search-wrapper input {
-            padding-left: 45px;
-            font-size: 1rem;
-        }
-
-        /* --- Footer Badge --- */
-        .isuf-badge {
-            position: fixed;
-            bottom: 20px;
-            left: 20px;
-            background: var(--glass);
-            padding: 8px 16px;
-            border-radius: 50px;
-            border: 1px solid var(--accent);
-            color: var(--accent);
-            font-weight: bold;
-            font-size: 0.8rem;
-            animation: glow 3s infinite;
-            z-index: 101;
-            pointer-events: none;
-        }
-        
-        .empty-state {
-            text-align: center;
-            padding: 3rem;
-            color: var(--text-dim);
-        }
-
-        .action-btn {
-            background: none;
-            border: 1px solid rgba(255,255,255,0.1);
-            color: white;
-            padding: 6px 12px;
-            border-radius: 6px;
-            cursor: pointer;
-            margin-right: 5px;
-        }
-
-        .action-btn:hover { background: rgba(255,255,255,0.1); }
-        .btn-delete { color: var(--danger); border-color: rgba(239, 68, 68, 0.3); }
-        .btn-delete:hover { background: rgba(239, 68, 68, 0.1); }
+        .badge { padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: bold; }
+        .avail { background: rgba(34, 197, 94, 0.2); color: #22c55e; }
+        .out { background: rgba(239, 68, 68, 0.2); color: #ef4444; }
 
     </style>
 </head>
 <body>
 
     <aside>
-        <div class="brand-area">
-            <div class="brand-name">ISUF PRO</div>
-            <p style="font-size: 0.6rem; color: var(--text-dim);">V2.0 STABLE</p>
-        </div>
+        <div class="logo"><span>📘</span> LIBRA PRO</div>
         <nav>
-            <button onclick="showSection('dashboard')" id="nav-dashboard" class="active">📊 Dashboard</button>
-            <button onclick="showSection('add-book')" id="nav-add-book">📚 Add New Book</button>
-            <button onclick="showSection('issue-book')" id="nav-issue-book">📤 Issue Book</button>
-            <button onclick="showSection('book-records')" id="nav-book-records">📝 Inventory Records</button>
-            <button onclick="showSection('issue-records')" id="nav-issue-records">📑 Issuance Log</button>
+            <div class="nav-link active" onclick="nav('db')">Dashboard Overview</div>
+            <div class="nav-link" onclick="nav('add')">Inventory Manager</div>
+            <div class="nav-link" onclick="nav('issue')">Issuance Desk</div>
+            <div class="nav-link" onclick="nav('logs')">System Records</div>
         </nav>
-        <div style="padding: 1.5rem; font-size: 0.7rem; color: var(--text-dim); border-top: 1px solid rgba(255,255,255,0.05);">
-            &copy; 2026 ISUF SYSTEMS<br>ENGINEERED FOR PERFORMANCE
+        <div style="margin-top: auto; padding-top: 2rem; border-top: 1px solid var(--border);">
+            <div style="font-size: 0.8rem; color: var(--text-secondary);">Logged in as Admin</div>
+            <div style="font-weight: bold; font-size: 0.9rem;">ISUF Professional</div>
         </div>
     </aside>
 
-    <main>
-        
-        <section id="dashboard" class="section active">
-            <h1 style="margin-bottom: 2rem;">Executive Dashboard</h1>
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <h3>TOTAL INVENTORY</h3>
-                    <p id="stat-total">0</p>
-                </div>
-                <div class="stat-card">
-                    <h3>ISSUED BOOKS</h3>
-                    <p id="stat-issued">0</p>
-                </div>
-                <div class="stat-card">
-                    <h3>AVAILABLE NOW</h3>
-                    <p id="stat-available" style="color: var(--success);">0</p>
-                </div>
-            </div>
-            
-            <div class="glass-card" style="margin-top: 2rem;">
-                <h3>Recent System Activity</h3>
-                <div id="recent-activity" class="empty-state">No recent transactions recorded.</div>
-            </div>
-        </section>
+    <div style="display: flex; flex-direction: column;">
+        <header>
+            <h2 id="view-title">Dashboard Overview</h2>
+            <button class="theme-toggle" onclick="toggleTheme()">🌓 TOGGLE THEME</button>
+        </header>
 
-        <section id="add-book" class="section">
-            <h1>Add New Asset</h1>
-            <div class="glass-card">
-                <div class="form-grid">
-                    <div>
-                        <div class="input-group">
-                            <label>UNIQUE BOOK ID</label>
-                            <input type="text" id="book-id" placeholder="e.g., ISBN-1002">
-                        </div>
-                        <div class="input-group">
-                            <label>BOOK TITLE</label>
-                            <input type="text" id="book-name" placeholder="Clean Architecture">
-                        </div>
-                        <div class="input-group">
-                            <label>CATEGORY</label>
-                            <select id="book-category">
-                                <option value="Technology">Technology</option>
-                                <option value="Science">Science</option>
-                                <option value="Literature">Literature</option>
-                                <option value="Management">Management</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div>
-                        <label>COVER IMAGE</label>
-                        <video id="camera-preview" autoplay></video>
-                        <div id="image-display" class="image-preview-box">
-                            <span id="img-placeholder">NO IMAGE</span>
-                        </div>
-                        <div style="margin-top: 10px; display: flex; gap: 10px;">
-                            <button onclick="triggerFile()" class="action-btn">Upload File</button>
-                            <button onclick="startCamera()" id="cam-toggle" class="action-btn">Use Camera</button>
-                            <button onclick="capturePhoto()" id="snap-btn" class="action-btn" style="display:none; color: var(--accent);">Capture</button>
-                        </div>
-                        <input type="file" id="file-input" style="display:none" accept="image/*">
-                    </div>
+        <main>
+            <section id="db" class="section active">
+                <div class="dashboard-grid">
+                    <div class="stat-card"><h3>Total Catalog</h3><p id="t-total">0</p></div>
+                    <div class="stat-card"><h3>Active Loans</h3><p id="t-issued">0</p></div>
+                    <div class="stat-card"><h3>Shelf Availability</h3><p id="t-avail">0</p></div>
                 </div>
-                <div style="margin-top: 2rem;">
-                    <button onclick="saveBook()" class="btn-primary">Register Book in System</button>
+                <div class="admin-card">
+                    <h3>Quick System Status</h3>
+                    <div id="status-msg" style="margin-top: 1rem; color: var(--text-secondary);">All systems operational. Ready for input.</div>
                 </div>
-            </div>
-        </section>
+            </section>
 
-        <section id="issue-book" class="section">
-            <h1>Issue Resource</h1>
-            <div class="glass-card">
-                <div class="form-grid">
-                    <div class="input-group">
-                        <label>TARGET BOOK ID</label>
-                        <input type="text" id="issue-book-id" placeholder="Enter ID to verify...">
-                    </div>
-                    <div class="input-group">
-                        <label>STUDENT NAME</label>
-                        <input type="text" id="student-name" placeholder="Full Legal Name">
-                    </div>
-                    <div class="input-group">
-                        <label>STUDENT ID</label>
-                        <input type="text" id="student-id" placeholder="STU-XXXX">
-                    </div>
-                    <div class="input-group">
-                        <label>ISSUE DATE</label>
-                        <input type="date" id="issue-date">
+            <section id="add" class="section">
+                <div class="admin-card">
+                    <div class="grid-2">
+                        <div>
+                            <div class="form-group">
+                                <label>Book ID (Serial)</label>
+                                <input type="text" id="b-id" placeholder="Ex: LIB-9982">
+                            </div>
+                            <div class="form-group">
+                                <label>Full Title</label>
+                                <input type="text" id="b-title" placeholder="Advanced Engineering Mathematics">
+                            </div>
+                            <div class="form-group">
+                                <label>Asset Classification</label>
+                                <select id="b-cat">
+                                    <option>Reference</option>
+                                    <option>Textbook</option>
+                                    <option>Periodical</option>
+                                    <option>Fiction</option>
+                                </select>
+                            </div>
+                            <button class="btn" onclick="addAsset()">REGISTER ASSET</button>
+                        </div>
+                        <div>
+                            <label>Asset Visualization</label>
+                            <div class="img-preview" id="preview-area">No Image Captured</div>
+                            <div style="display:flex; gap: 10px;">
+                                <button class="btn" style="flex:1; background: #64748b;" onclick="document.getElementById('f-up').click()">Upload</button>
+                                <button class="btn" style="flex:1; background: #64748b;" onclick="startCam()">Camera</button>
+                            </div>
+                            <input type="file" id="f-up" hidden accept="image/*" onchange="handleFile(this)">
+                        </div>
                     </div>
                 </div>
-                <button onclick="processIssue()" class="btn-primary" style="margin-top: 1rem;">Authorize Issuance</button>
-            </div>
-        </section>
+            </section>
 
-        <section id="book-records" class="section">
-            <h1>Global Inventory</h1>
-            <div class="search-wrapper">
-                <input type="text" id="search-books" oninput="filterBooks()" placeholder="🔍 Search by name, ID or category...">
-            </div>
-            <div class="glass-card">
-                <div class="table-container">
-                    <table id="book-table">
+            <section id="issue" class="section">
+                <div class="admin-card">
+                    <div class="grid-2">
+                        <div class="form-group">
+                            <label>Book ID</label>
+                            <input type="text" id="i-id" placeholder="Enter ID to Scan...">
+                        </div>
+                        <div class="form-group">
+                            <label>Student Name</label>
+                            <input type="text" id="i-name" placeholder="Full Legal Name">
+                        </div>
+                    </div>
+                    <button class="btn" onclick="issueAsset()">AUTHORIZE LOAN</button>
+                </div>
+            </section>
+
+            <section id="logs" class="section">
+                <div class="admin-card">
+                    <div style="display:flex; justify-content: space-between; margin-bottom: 2rem;">
+                        <input type="text" style="max-width: 300px;" placeholder="Filter Records..." onkeyup="filterTable(this)">
+                    </div>
+                    <table id="main-table">
                         <thead>
                             <tr>
-                                <th>Cover</th>
+                                <th>Asset</th>
                                 <th>Book ID</th>
-                                <th>Name</th>
                                 <th>Category</th>
-                                <th>Status</th>
-                                <th>Actions</th>
+                                <th>Status / Holder</th>
+                                <th>Action</th>
                             </tr>
                         </thead>
-                        <tbody id="book-list-body"></tbody>
+                        <tbody id="table-body"></tbody>
                     </table>
                 </div>
-            </div>
-        </section>
+            </section>
+        </main>
+    </div>
 
-        <section id="issue-records" class="section">
-            <h1>Active Issuance Logs</h1>
-            <div class="glass-card">
-                <div class="table-container">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Book ID</th>
-                                <th>Student</th>
-                                <th>Student ID</th>
-                                <th>Issue Date</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="issue-list-body"></tbody>
-                    </table>
-                </div>
-            </div>
-        </section>
-
-    </main>
-
-    <div id="toast"></div>
-    <div class="isuf-badge">👑 ISUF – PROFESSIONAL PROGRAMMER 👑</div>
+    <div id="toast">Operation Successful</div>
 
     <script>
-        // --- DATA LAYER ---
-        let books = JSON.parse(localStorage.getItem('lib_books')) || [];
-        let issued = JSON.parse(localStorage.getItem('lib_issued')) || [];
-        let currentBase64 = "";
+        let db = JSON.parse(localStorage.getItem('libra_db')) || { books: [], issued: [] };
+        let currentImg = "";
 
-        // --- CORE INITIALIZATION ---
-        function init() {
-            updateDashboard();
-            renderBooks();
-            renderIssued();
-            document.getElementById('issue-date').valueAsDate = new Date();
+        function save() { 
+            localStorage.setItem('libra_db', JSON.stringify(db)); 
+            render();
+            updateStats();
         }
 
-        // --- NAVIGATION ---
-        function showSection(id) {
+        function toggleTheme() {
+            const html = document.documentElement;
+            html.setAttribute('data-theme', html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+        }
+
+        function nav(id) {
             document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-            document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
-            
+            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
             document.getElementById(id).classList.add('active');
-            document.getElementById('nav-' + id).classList.add('active');
-            
-            if(id === 'dashboard') updateDashboard();
-            stopCamera();
+            event.currentTarget.classList.add('active');
+            document.getElementById('view-title').innerText = event.currentTarget.innerText;
         }
 
-        // --- UTILS ---
-        function showToast(msg, type = 'success') {
-            const toast = document.getElementById('toast');
-            toast.innerText = msg;
-            toast.style.background = type === 'success' ? 'var(--success)' : 'var(--danger)';
-            toast.classList.add('show');
-            setTimeout(() => toast.classList.remove('show'), 3000);
+        function toast(msg, err=false) {
+            const t = document.getElementById('toast');
+            t.innerText = msg;
+            t.style.background = err ? "#ef4444" : "#22c55e";
+            t.style.transform = "translateX(0)";
+            setTimeout(() => t.style.transform = "translateX(150%)", 3000);
         }
 
-        function saveData() {
-            localStorage.setItem('lib_books', JSON.stringify(books));
-            localStorage.setItem('lib_issued', JSON.stringify(issued));
-            updateDashboard();
-        }
-
-        // --- CAMERA & IMAGE HANDLING ---
-        const video = document.getElementById('camera-preview');
-        const fileInput = document.getElementById('file-input');
-
-        function triggerFile() { fileInput.click(); }
-
-        fileInput.onchange = e => {
-            const file = e.target.files[0];
+        function handleFile(input) {
             const reader = new FileReader();
-            reader.onload = (event) => {
-                currentBase64 = event.target.result;
-                previewImage(currentBase64);
+            reader.onload = (e) => {
+                currentImg = e.target.result;
+                document.getElementById('preview-area').innerHTML = `<img src="${currentImg}">`;
             };
-            reader.readAsDataURL(file);
-        };
-
-        function startCamera() {
-            navigator.mediaDevices.getUserMedia({ video: true })
-                .then(stream => {
-                    video.srcObject = stream;
-                    video.style.display = 'block';
-                    document.getElementById('snap-btn').style.display = 'inline-block';
-                    document.getElementById('image-display').style.display = 'none';
-                })
-                .catch(err => showToast("Camera access denied", "error"));
+            reader.readAsDataURL(input.files[0]);
         }
 
-        function stopCamera() {
-            if (video.srcObject) {
-                video.srcObject.getTracks().forEach(track => track.stop());
-                video.style.display = 'none';
-                document.getElementById('snap-btn').style.display = 'none';
-                document.getElementById('image-display').style.display = 'flex';
-            }
+        async function startCam() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                const video = document.createElement('video');
+                video.srcObject = stream;
+                video.play();
+                document.getElementById('preview-area').innerHTML = '';
+                document.getElementById('preview-area').appendChild(video);
+                video.onclick = () => {
+                    const canvas = document.createElement('canvas');
+                    canvas.width = video.videoWidth; canvas.height = video.videoHeight;
+                    canvas.getContext('2d').drawImage(video, 0,0);
+                    currentImg = canvas.toDataURL('image/jpeg');
+                    document.getElementById('preview-area').innerHTML = `<img src="${currentImg}">`;
+                    stream.getTracks().forEach(t => t.stop());
+                };
+                toast("Click video to capture");
+            } catch(e) { toast("Camera Access Denied", true); }
         }
 
-        function capturePhoto() {
-            const canvas = document.createElement('canvas');
-            canvas.width = video.videoWidth;
-            canvas.height = video.videoHeight;
-            canvas.getContext('2d').drawImage(video, 0, 0);
-            currentBase64 = canvas.toDataURL('image/jpeg');
-            previewImage(currentBase64);
-            stopCamera();
+        function addAsset() {
+            const id = document.getElementById('b-id').value;
+            const title = document.getElementById('b-title').value;
+            if(!id || !title) return toast("ID and Title required", true);
+            if(db.books.find(b => b.id === id)) return toast("ID already exists", true);
+
+            db.books.push({ id, title, cat: document.getElementById('b-cat').value, img: currentImg, status: 'avail' });
+            save();
+            toast("Asset Registered");
+            document.getElementById('b-id').value = ''; document.getElementById('b-title').value = '';
         }
 
-        function previewImage(base64) {
-            const box = document.getElementById('image-display');
-            box.innerHTML = `<img src="${base64}" alt="Preview">`;
+        function issueAsset() {
+            const id = document.getElementById('i-id').value;
+            const name = document.getElementById('i-name').value;
+            const book = db.books.find(b => b.id === id);
+
+            if(!book || book.status === 'out') return toast("Asset Unavailable or Invalid", true);
+            if(!name) return toast("Holder Name Required", true);
+
+            book.status = 'out';
+            db.issued.push({ id, name, date: new Date().toLocaleDateString() });
+            save();
+            toast("Asset Loaned Successfully");
+            document.getElementById('i-id').value = ''; document.getElementById('i-name').value = '';
         }
 
-        // --- BOOK MANAGEMENT ---
-        function saveBook() {
-            const id = document.getElementById('book-id').value.trim();
-            const name = document.getElementById('book-name').value.trim();
-            const cat = document.getElementById('book-category').value;
-
-            if(!id || !name) return showToast("Book ID and Name are required", "error");
-            if(books.find(b => b.id === id)) return showToast("Duplicate Book ID detected", "error");
-
-            books.push({
-                id, name, cat,
-                image: currentBase64 || null,
-                status: 'Available'
-            });
-
-            saveData();
-            renderBooks();
-            showToast("Book registered successfully");
-            
-            // Reset
-            document.getElementById('book-id').value = '';
-            document.getElementById('book-name').value = '';
-            document.getElementById('image-display').innerHTML = '<span id="img-placeholder">NO IMAGE</span>';
-            currentBase64 = "";
+        function returnAsset(id) {
+            const book = db.books.find(b => b.id === id);
+            book.status = 'avail';
+            db.issued = db.issued.filter(i => i.id !== id);
+            save();
+            toast("Asset Returned");
         }
 
-        function deleteBook(id) {
-            if(!confirm("Are you sure? This will remove all history for this book.")) return;
-            if(issued.find(i => i.bookId === id)) return showToast("Cannot delete: Book is currently issued", "error");
-            
-            books = books.filter(b => b.id !== id);
-            saveData();
-            renderBooks();
-            showToast("Book deleted");
+        function deleteAsset(id) {
+            if(!confirm("Permenantly delete this record?")) return;
+            db.books = db.books.filter(b => b.id !== id);
+            db.issued = db.issued.filter(i => i.id !== id);
+            save();
         }
 
-        function renderBooks(filter = "") {
-            const body = document.getElementById('book-list-body');
-            body.innerHTML = "";
-            
-            const filtered = books.filter(b => 
-                b.name.toLowerCase().includes(filter.toLowerCase()) || 
-                b.id.toLowerCase().includes(filter.toLowerCase())
-            );
-
-            if(filtered.length === 0) {
-                body.innerHTML = '<tr><td colspan="6" class="empty-state">No matching books found.</td></tr>';
-                return;
-            }
-
-            filtered.forEach(b => {
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td><img src="${b.image || 'https://via.placeholder.com/40x55?text=No+Img'}" class="book-thumb"></td>
-                    <td><b>${b.id}</b></td>
-                    <td>${b.name}</td>
-                    <td>${b.cat}</td>
-                    <td><span class="badge ${b.status === 'Available' ? 'badge-success' : 'badge-danger'}">${b.status}</span></td>
-                    <td>
-                        <button onclick="deleteBook('${b.id}')" class="action-btn btn-delete">Delete</button>
-                    </td>
+        function render() {
+            const tbody = document.getElementById('table-body');
+            tbody.innerHTML = db.books.map(b => {
+                const issueData = db.issued.find(i => i.id === b.id);
+                return `
+                    <tr>
+                        <td><img src="${b.img || ''}" style="width:40px; height:50px; background:#334155; border-radius:4px; object-fit:cover;"> ${b.title}</td>
+                        <td><code>${b.id}</code></td>
+                        <td>${b.cat}</td>
+                        <td>
+                            <span class="badge ${b.status === 'avail' ? 'avail' : 'out'}">
+                                ${b.status === 'avail' ? 'ON SHELF' : 'LOANED: ' + issueData.name}
+                            </span>
+                        </td>
+                        <td>
+                            ${b.status === 'out' ? `<button class="btn" style="padding:4px 10px; background:#10b981;" onclick="returnAsset('${b.id}')">Return</button>` : ''}
+                            <button class="btn" style="padding:4px 10px; background:#ef4444;" onclick="deleteAsset('${b.id}')">Del</button>
+                        </td>
+                    </tr>
                 `;
-                body.appendChild(tr);
+            }).join('');
+        }
+
+        function updateStats() {
+            document.getElementById('t-total').innerText = db.books.length;
+            document.getElementById('t-issued').innerText = db.issued.length;
+            document.getElementById('t-avail').innerText = db.books.length - db.issued.length;
+        }
+
+        function filterTable(input) {
+            const val = input.value.toLowerCase();
+            document.querySelectorAll('#table-body tr').forEach(tr => {
+                tr.style.display = tr.innerText.toLowerCase().includes(val) ? '' : 'none';
             });
         }
 
-        function filterBooks() {
-            renderBooks(document.getElementById('search-books').value);
-        }
-
-        // --- ISSUANCE LOGIC ---
-        function processIssue() {
-            const bId = document.getElementById('issue-book-id').value.trim();
-            const sName = document.getElementById('student-name').value.trim();
-            const sId = document.getElementById('student-id').value.trim();
-            const date = document.getElementById('issue-date').value;
-
-            const book = books.find(b => b.id === bId);
-
-            if(!book) return showToast("Error: Book ID does not exist", "error");
-            if(book.status === 'Issued') return showToast("Error: Book is already issued", "error");
-            if(!sName || !sId) return showToast("Student details required", "error");
-
-            book.status = 'Issued';
-            issued.push({ bookId: bId, studentName: sName, studentId: sId, date });
-
-            saveData();
-            renderIssued();
-            renderBooks();
-            showToast("Issuance authorized");
-            
-            // Reset
-            document.getElementById('issue-book-id').value = '';
-            document.getElementById('student-name').value = '';
-            document.getElementById('student-id').value = '';
-        }
-
-        function returnBook(bId) {
-            if(!confirm("Process return for this asset?")) return;
-            
-            const book = books.find(b => b.id === bId);
-            if(book) book.status = 'Available';
-            
-            issued = issued.filter(i => i.bookId !== bId);
-            
-            saveData();
-            renderIssued();
-            renderBooks();
-            showToast("Asset returned to inventory");
-        }
-
-        function renderIssued() {
-            const body = document.getElementById('issue-list-body');
-            body.innerHTML = "";
-
-            if(issued.length === 0) {
-                body.innerHTML = '<tr><td colspan="5" class="empty-state">No active issuances.</td></tr>';
-                return;
-            }
-
-            issued.forEach(i => {
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td><b>${i.bookId}</b></td>
-                    <td>${i.studentName}</td>
-                    <td>${i.studentId}</td>
-                    <td>${i.date}</td>
-                    <td>
-                        <button onclick="returnBook('${i.bookId}')" class="action-btn" style="color: var(--success); border-color: var(--success);">Return Asset</button>
-                    </td>
-                `;
-                body.appendChild(tr);
-            });
-        }
-
-        // --- DASHBOARD LOGIC ---
-        function updateDashboard() {
-            document.getElementById('stat-total').innerText = books.length;
-            document.getElementById('stat-issued').innerText = issued.length;
-            document.getElementById('stat-available').innerText = books.length - issued.length;
-
-            const activity = document.getElementById('recent-activity');
-            if(issued.length > 0) {
-                const last = issued[issued.length - 1];
-                activity.innerHTML = `<div style="text-align:left; border-left: 3px solid var(--accent); padding-left: 15px;">
-                    <p><strong>Recent Issue:</strong> ${last.bookId} issued to ${last.studentName}</p>
-                    <small style="color: var(--text-dim)">Timestamp: ${last.date}</small>
-                </div>`;
-            } else {
-                activity.innerHTML = "No recent transactions recorded.";
-            }
-        }
-
-        // Run Init
-        init();
+        render();
+        updateStats();
     </script>
 </body>
 </html>
